@@ -1,0 +1,127 @@
+{
+  "format" : "10.0.0",
+  "id" : "18834AC5BA150030",
+  "kind" : "HTML_DIALOG",
+  "config" : {
+    "data" : "com.axonivy.connector.kafka.demo.DemoGui.DemoGuiData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "HtmlDialogStart",
+      "name" : "start()",
+      "config" : {
+        "callSignature" : "start",
+        "guid" : "18834AC5BA45AC25"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 }
+      },
+      "connect" : { "id" : "f2", "to" : "f1" }
+    }, {
+      "id" : "f1",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 224, "y" : 64 }
+      }
+    }, {
+      "id" : "f6",
+      "type" : "HtmlDialogEventStart",
+      "name" : "sendTopicA",
+      "config" : {
+        "guid" : "18834B3A7CBD6526"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 160 }
+      },
+      "connect" : { "id" : "f15", "to" : "f8" }
+    }, {
+      "id" : "f7",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 512, "y" : 240 }
+      }
+    }, {
+      "id" : "f9",
+      "type" : "HtmlDialogEventStart",
+      "name" : "sendTopicB",
+      "config" : {
+        "guid" : "18834B3B01CCBFAD"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 240 }
+      },
+      "connect" : { "id" : "f18", "to" : "f16" }
+    }, {
+      "id" : "f12",
+      "type" : "HtmlDialogEventStart",
+      "name" : "sendTopicS",
+      "config" : {
+        "guid" : "18834B3BCF249FC3"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 320 }
+      },
+      "connect" : { "id" : "f19", "to" : "f17" }
+    }, {
+      "id" : "f3",
+      "type" : "Script",
+      "name" : "Send",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import org.apache.kafka.clients.producer.ProducerRecord;",
+            "import org.apache.kafka.clients.producer.KafkaProducer;",
+            "import com.axonivy.connector.kafka.KafkaService;",
+            "",
+            "ivy.log.info(\"Sending to topic: ''{0}'', key: ''{1}'', value: ''{2}''\", in.topic, in.key, in.value);",
+            "",
+            "KafkaProducer producer = KafkaService.get().createProducer(\"localhost\");",
+            "producer.send(new ProducerRecord(in.topic, in.key, in.value));"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 384, "y" : 240 }
+      },
+      "connect" : { "id" : "f5", "to" : "f7" }
+    }, {
+      "id" : "f8",
+      "type" : "Script",
+      "name" : "Set topic",
+      "config" : {
+        "output" : {
+          "code" : "in.topic = \"TopicA\";"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 160 }
+      },
+      "connect" : { "id" : "f4", "to" : "f3" }
+    }, {
+      "id" : "f16",
+      "type" : "Script",
+      "name" : "Set topic",
+      "config" : {
+        "output" : {
+          "code" : "in.topic = \"TopicB\";"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 240 }
+      },
+      "connect" : { "id" : "f20", "to" : "f3" }
+    }, {
+      "id" : "f17",
+      "type" : "Script",
+      "name" : "Set topic",
+      "config" : {
+        "output" : {
+          "code" : "in.topic = \"TopicS\";"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 320 }
+      },
+      "connect" : { "id" : "f11", "to" : "f3" }
+    } ]
+}

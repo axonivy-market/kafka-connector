@@ -6,4 +6,13 @@
 # '<project>/Config/_<environment>/variables.yaml
 #
 Variables:
-#  myVariable: value
+  kafka-connector:
+    # Number of worker threads to handle Kafka messages in parallel.
+    workerPoolSize: 10
+    # Consumer polling time in ms. Note, that messages are always received immediately. This is only the blocking timeout of the poll function.
+    pollTimeoutMs: 60000
+    localhost:
+      # inherit from a configuration with this name
+      inherit: 'default'
+      # list of bootstrap servers
+      bootstrapServers: 'localhost:29092'

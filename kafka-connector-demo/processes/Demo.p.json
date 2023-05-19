@@ -1,0 +1,166 @@
+{
+  "format" : "10.0.0",
+  "id" : "18833AFFFC2AC1DD",
+  "config" : {
+    "data" : "com.axonivy.connector.kafka.demo.DemoData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "start.ivp",
+      "config" : {
+        "callSignature" : "start",
+        "outLink" : "start.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 }
+      },
+      "connect" : { "id" : "f21", "to" : "f19" }
+    }, {
+      "id" : "f1",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 416, "y" : 64 }
+      }
+    }, {
+      "id" : "f5",
+      "type" : "ProgramStart",
+      "name" : "TopicA",
+      "config" : {
+        "beanConfig" : [
+          "kafkaConfigurationNameField=localhost",
+          "synchronousField=false",
+          "topicPatternField=TopicA"
+        ],
+        "outerBean" : "com.axonivy.connector.kafka.KafkaStartEventBean"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 192 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      },
+      "connect" : { "id" : "f9", "to" : "f8" }
+    }, {
+      "id" : "f6",
+      "type" : "ProgramStart",
+      "name" : "TopicS",
+      "config" : {
+        "beanConfig" : [
+          "kafkaConfigurationNameField=localhost",
+          "synchronousField=true",
+          "topicPatternField=TopicS"
+        ],
+        "outLink" : "eventLink2.ivp",
+        "outerBean" : "com.axonivy.connector.kafka.KafkaStartEventBean"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 432 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      },
+      "connect" : { "id" : "f14", "to" : "f13" }
+    }, {
+      "id" : "f7",
+      "type" : "ProgramStart",
+      "name" : "TopicB",
+      "config" : {
+        "beanConfig" : [
+          "kafkaConfigurationNameField=localhost",
+          "synchronousField=false",
+          "topicPatternField=TopicB"
+        ],
+        "outLink" : "eventLink3.ivp",
+        "outerBean" : "com.axonivy.connector.kafka.KafkaStartEventBean"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 272 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      },
+      "connect" : { "id" : "f10", "to" : "f8" }
+    }, {
+      "id" : "f8",
+      "type" : "Script",
+      "name" : "Log",
+      "config" : {
+        "output" : {
+          "code" : [
+            "ivy.log.info(\"Received Kafka message, topic ''{0}'', offset: {1}, key: ''{2}'', value: ''{3}''.\",",
+            "  in.consumerRecord.topic(),",
+            "  in.consumerRecord.offset(),",
+            "  in.consumerRecord.key(),",
+            "  in.consumerRecord.value());"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 240, "y" : 240 }
+      },
+      "connect" : { "id" : "f12", "to" : "f11" }
+    }, {
+      "id" : "f11",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 416, "y" : 240 }
+      }
+    }, {
+      "id" : "f13",
+      "type" : "Script",
+      "name" : "Consume and commit message.",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import ch.ivyteam.ivy.process.model.value.SignalCode;",
+            "",
+            "ivy.wf.signals().send(new SignalCode(\"TopicS\"), in.consumerRecord.value());",
+            "",
+            "// After successful handling, message can be committed. I the message is not",
+            "// committed, it will be retransferred after the next restart of the client.",
+            "// Please see the documentation of Kafka for details.",
+            "in.consumer.commitSync();"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 240, "y" : 432 }
+      },
+      "connect" : { "id" : "f16", "to" : "f15" }
+    }, {
+      "id" : "f15",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 416, "y" : 432 }
+      }
+    }, {
+      "id" : "f17",
+      "type" : "ProcessAnnotation",
+      "name" : [
+        "Asynchronous message handling. Messages of a topic can be received while others are still beeing processed in a worker pool.",
+        "Message processing will end (but not block receiving new messages for the topic) at a process end element or at a task switch element."
+      ],
+      "visual" : {
+        "at" : { "x" : 648, "y" : 240 },
+        "size" : { "width" : 376, "height" : 80 }
+      }
+    }, {
+      "id" : "f18",
+      "type" : "ProcessAnnotation",
+      "name" : [
+        "Synchronous message handling. Only a single message of a topic will be processed. The worker pool will not be used. If you want to commit messages yourself (not automatically as in the default), then you should go this way.",
+        "Message processing will end (and the next message of the topic can be received) at a process end element or at a task switch element."
+      ],
+      "visual" : {
+        "at" : { "x" : 646, "y" : 425 },
+        "size" : { "width" : 369, "height" : 116 }
+      }
+    }, {
+      "id" : "f19",
+      "type" : "DialogCall",
+      "name" : "Demo GUI",
+      "config" : {
+        "dialogId" : "com.axonivy.connector.kafka.demo.DemoGui",
+        "startMethod" : "start()"
+      },
+      "visual" : {
+        "at" : { "x" : 240, "y" : 64 }
+      },
+      "connect" : { "id" : "f2", "to" : "f1" }
+    } ]
+}

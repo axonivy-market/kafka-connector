@@ -6,4 +6,21 @@
 # '<project>/Config/_<environment>/variables.yaml
 #
 Variables:
-#  myVariable: value
+  kafka-connector:
+    # for a list of configuration options see https://kafka.apache.org/documentation/
+    default:
+      # class used for key serialization
+      key.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+      # class used for value serialization
+      value.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+      # class used for key deserialization
+      key.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+      # class used for value deserialization
+      value.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+      # should messages be auto-committed?
+      enable.auto.commit: true
+      # where to start reading if there was not yet any offset found for the client
+      auto.offset.reset: 'earliest'
+      
+
+      
