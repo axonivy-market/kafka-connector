@@ -47,7 +47,7 @@ On the web you will find stand-alone tools like [Offset Explorer](https://www.of
 YOUR SETUP DESCRIPTION GOES HERE
 Docker
 
-[docker compose file](files/docker-compose.yaml)
+[docker compose file](files/docker-compose.yml)
 
 ```
 @variables.yaml@
