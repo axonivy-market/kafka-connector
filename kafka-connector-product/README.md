@@ -55,13 +55,28 @@ Copy this file to your machine and `cd`to the directory. Enter there the command
 docker-compose up -d
 ```
 and docker will start a `zookeeper` server on port 2181  and a `kafka` server on port 9092. To
-connect to this server, use `localhost:9092` as your bootstrap server. 
-
-```
-@variables.yaml@
-```
+connect to this server, use `localhost:9092` as your bootstrap server. Note, that the demo
+is configred to connect exactly to this server.
 
 ## Usage
+
+The connector was built to give you as much access as possible to the original Apache Kafka API
+while providing some useful semantics to use in Axon Ivy.
+
+### KafkaStartEvenBean
+
+An `IProcessStartEvenBean` named `KafkaStartEventBean` is provided to listen to topics and start
+Ivy processes. This bean needs to be configured:
+
+Topic Pattern
+: Enter a valid `java.util.regex.Pattern` as the topic to listen to. Note, that words without
+special chararcters are valid patterns. So there is no need to learn a special syntax to listen
+to simple topic names. Topic patterns are case sensitive
+
+Synchronous
+: When a message is received, will the bean wait until the started process gives back control
+(synchronous) or continue to receive messages in parallel (asynchronous).
+
 
 * Classpath problem
 * synchronous/asynchronous, thread pools
