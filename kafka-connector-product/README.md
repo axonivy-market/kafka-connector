@@ -44,10 +44,18 @@ On the web you will find stand-alone tools like [Offset Explorer](https://www.of
 
 ## Setup
 
-YOUR SETUP DESCRIPTION GOES HERE
-Docker
+### Apache Kafka in Docker
 
-[docker compose file](files/docker-compose.yml)
+If you do not have access to an existing Apache Kafka, you may quickly start one
+in a docker container. You may want to use the provided docker compose file
+[docker-compose.yml](files/docker-compose.yml) as a starter.
+
+Copy this file to your machine and `cd`to the directory. Enter there the command
+```
+docker-compose up -d
+```
+and docker will start a `zookeeper` server on port 2181  and a `kafka` server on port 9092. To
+connect to this server, use `localhost:9092` as your bootstrap server. 
 
 ```
 @variables.yaml@
