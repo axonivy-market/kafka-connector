@@ -309,7 +309,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 
 					Configuration name:
 					Name of a collection of global variables below
-					%s which define	a specific Kafka consumer configuration.
+					%s which defines a specific Kafka consumer configuration.
 					""", KafkaService.get().getKafkaGlobalVariableName());
 			ui.label(helpTopic).multiline().create();
 		}
