@@ -13,11 +13,27 @@ synchronously or asynchronously.
 
 ## Demo
 
-YOUR DEMO DESCRIPTION GOES HERE
+The demo provides a single dialog with quick sending buttons for different topics.
+You may enter a key and a value but it is ok, to use the same key and value for
+multiple messages.
+
+To see the effect of sending messages you have multiple options:
+
+### Apache Kafka command line
+
+Start a console consumer and see messages appearing on the console directly.
+
+```
+kafka-console-consumer --bootstrap-server localhost:9092 --topic TopicA
+```
+Type `kafka-console-consumer --help` for usage.
+
+
 
 ## Setup
 
 YOUR SETUP DESCRIPTION GOES HERE
+Docker
 
 ```
 @variables.yaml@
