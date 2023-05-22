@@ -11,4 +11,4 @@ Variables:
       # inherit from a configuration with this name
       inherit: 'default'
       # list of bootstrap servers
-      bootstrap.servers: 'localhost:29092'
+      bootstrap.servers: 'localhost:9092'

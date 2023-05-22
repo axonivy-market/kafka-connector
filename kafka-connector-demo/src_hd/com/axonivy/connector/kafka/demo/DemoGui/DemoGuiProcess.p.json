@@ -75,7 +75,7 @@
             "",
             "ivy.log.info(\"Sending to topic: ''{0}'', key: ''{1}'', value: ''{2}''\", in.topic, in.key, in.value);",
             "",
-            "KafkaProducer producer = KafkaService.get().createProducer(\"localhost\");",
+            "KafkaProducer producer = KafkaService.get().createProducer(in.configurationName);",
             "producer.send(new ProducerRecord(in.topic, in.key, in.value));"
           ]
         }
@@ -130,6 +130,14 @@
       "config" : {
         "output" : {
           "code" : [
+            "import com.axonivy.connector.kafka.KafkaService;",
+            "import com.axonivy.connector.kafka.demo.DemoService;",
+            "",
+            "KafkaService kafkaService = KafkaService.get();",
+            "",
+            "in.configurationName = \"localhost\";",
+            "in.configuration = kafkaService.getPropertiesString(kafkaService.getConfigurationProperties(in.configurationName));",
+            "",
             "in.key = \"my key\";",
             "in.value = \"my value\";"
           ]

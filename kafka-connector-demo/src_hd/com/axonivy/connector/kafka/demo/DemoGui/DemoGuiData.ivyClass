@@ -8,3 +8,7 @@ counter Integer #field
 counter PERSISTENT #fieldModifier
 topic String #field
 topic PERSISTENT #fieldModifier
+configurationName String #field
+configurationName PERSISTENT #fieldModifier
+configuration String #field
+configuration PERSISTENT #fieldModifier
