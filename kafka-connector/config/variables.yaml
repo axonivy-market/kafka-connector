@@ -21,6 +21,8 @@ Variables:
       enable.auto.commit: true
       # where to start reading if there was not yet any offset found for the client
       auto.offset.reset: 'earliest'
+      # group id
+      group.id: 'AxonIvy'
       
 
       

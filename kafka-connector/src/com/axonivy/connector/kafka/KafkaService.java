@@ -1,10 +1,12 @@
 package com.axonivy.connector.kafka;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -42,6 +44,18 @@ public class KafkaService {
 	}
 
 	/**
+	 * Create a {@link KafkaProducer} configured by given properties name.
+	 * 
+	 * @param <K>
+	 * @param <V>
+	 * @param properties
+	 * @return
+	 */
+	public <K, V> KafkaProducer<K, V> createProducer(Properties properties) {
+		return executeWithKafkaClassLoader(() -> new KafkaProducer<>(properties));
+	}
+
+	/**
 	 * Create a {@link KafkaProducer} configured by configuration name.
 	 * 
 	 * @param <K>
@@ -50,8 +64,19 @@ public class KafkaService {
 	 * @return
 	 */
 	public <K, V> KafkaProducer<K, V> createProducer(String configurationName) {
-		Properties properties = getConfigurationProperties(configurationName);
-		return executeWithKafkaClassLoader(() -> new KafkaProducer<>(properties));
+		return createProducer(getConfigurationProperties(configurationName));
+	}
+
+	/**
+	 * Create a {@link KafkaConsumer} configured by given properties.
+	 * 
+	 * @param <K>
+	 * @param <V>
+	 * @param properties
+	 * @return
+	 */
+	public <K, V> KafkaConsumer<K, V> createConsumer(Properties properties) {
+		return executeWithKafkaClassLoader(() -> new KafkaConsumer<>(properties));
 	}
 
 	/**
@@ -63,8 +88,7 @@ public class KafkaService {
 	 * @return
 	 */
 	public <K, V> KafkaConsumer<K, V> createConsumer(String configurationName) {
-		Properties properties = getConfigurationProperties(configurationName);
-		return executeWithKafkaClassLoader(() -> new KafkaConsumer<>(properties));
+		return createConsumer(getConfigurationProperties(configurationName));
 	}
 
 
@@ -126,8 +150,7 @@ public class KafkaService {
 	 * @return
 	 */
 	public String getTopicConsumerSupplier() {
-		String value = Ivy.var().get(TOPIC_CONSUMER_SUPPLIER);
-		return StringUtils.isNotBlank(value) ? value.trim() : null;
+		return getVar(TOPIC_CONSUMER_SUPPLIER, v -> ( StringUtils.isNotBlank(v) ? v.trim() : null), (String)null);
 	}
 
 	/**
@@ -143,6 +166,19 @@ public class KafkaService {
 		mergeProperties(configurationName, seen, properties);
 
 		return properties;
+	}
+
+	/**
+	 * Convert {@link Properties} to {@link String}.
+	 * 
+	 * @param properties
+	 * @return
+	 */
+	public String getPropertiesString(Properties properties) {
+		return properties.entrySet().stream()
+				.sorted(Comparator.comparing(e -> e.getKey().toString()))
+				.map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
+				.collect(Collectors.joining("\n"));
 	}
 
 	protected <T> T getVar(String varName, Function<String, T> converter, T defaultValue) {

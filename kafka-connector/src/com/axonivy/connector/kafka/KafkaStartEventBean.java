@@ -44,6 +44,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	private ExecutorService consumerExecutor;
 	private KafkaConsumerRunnable consumerThread;
 	private Properties beanConfiguration;
+	private Properties varConfiguration;
 
 	public KafkaStartEventBean() {
 		super("KafkaStartEventBean", "Listen on Kafka topics");
@@ -59,6 +60,10 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 
 	@Override
 	public void start(IProgressMonitor monitor) throws ServiceException {
+		String kafkaConfigurationName = getKafkaConfigurationName();
+		varConfiguration = KafkaService.get().getConfigurationProperties(kafkaConfigurationName);
+
+		// TODO Ivy is available here, but not in Runnable - find solution
 
 		// If any of the start beans is not synchronous, the worker pool is initialized.
 		synchronized (KafkaStartEventBean.class) {
@@ -71,9 +76,22 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		}
 
 		log().debug("Starting Kafka consumer for topic pattern: ''{0}'' and configuration name: ''{1}''",
-				getTopicPattern(), getKafkaConfigurationName());
+				getTopicPattern(), kafkaConfigurationName);
 
-		consumerThread = new KafkaConsumerRunnable(getKafkaConfigurationName());
+		// TODO describe consumer supplier in doc
+		KafkaTopicConsumerSupplier<Object, Object> topicConsumerSupplier = new DefaultTopicConsumerSupplier<>();
+
+		String topicConsumerSupplierClass = KafkaService.get().getTopicConsumerSupplier();
+		if(topicConsumerSupplierClass != null) {
+			try {
+				topicConsumerSupplier = (KafkaTopicConsumerSupplier<Object, Object>) Class.forName(topicConsumerSupplierClass).getDeclaredConstructor().newInstance();
+			} catch (Exception e) {
+				log().error("Error while finding topic consumer supplier ''{0}'', falling back to default consumer supplier ''{1}''.",
+						topicConsumerSupplierClass, topicConsumerSupplier.getClass().getCanonicalName());
+			}
+		}
+
+		consumerThread = new KafkaConsumerRunnable(kafkaConfigurationName, varConfiguration, topicConsumerSupplier);
 		consumerExecutor = Executors.newSingleThreadExecutor(new NamingThreadFactory("kafka-consumer-" + consumerBeanCounter.incrementAndGet()));
 		consumerExecutor.execute(consumerThread);
 
@@ -174,12 +192,14 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		private KafkaConsumer<Object, Object> consumer = null;
 		private boolean synchronous = false;
 		private String configurationName;
+		private Properties properties;
+		private KafkaTopicConsumerSupplier topicConsumerSupplier;
 
-		private KafkaConsumerRunnable(String configurationName) {
+		private KafkaConsumerRunnable(String configurationName, Properties properties, KafkaTopicConsumerSupplier topicConsumerSupplier) {
 			this.configurationName = configurationName;
+			this.properties = properties;
+			this.topicConsumerSupplier = topicConsumerSupplier;
 		}
-
-
 
 		@Override
 		public void run() {
@@ -187,15 +207,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 				synchronous = isSynchronous();
 				log().debug("Handle Kafka messages synchronously: {0}", synchronous);
 
-				// TODO describe consumer supplier in doc
-				KafkaTopicConsumerSupplier<Object, Object> consumerSupplier = new DefaultTopicConsumerSupplier<>();
-				String topicConsumerSupplier = KafkaService.get().getTopicConsumerSupplier();
-
-				if(topicConsumerSupplier != null) {
-					consumerSupplier = (KafkaTopicConsumerSupplier<Object, Object>) Class.forName(topicConsumerSupplier).getDeclaredConstructor().newInstance();
-				}
-
-				consumer = consumerSupplier.apply(configurationName, getTopicPattern());
+				consumer = topicConsumerSupplier.apply(properties, getTopicPattern());
 
 				log().debug("Subscribed to Kafka topic pattern: {0}", getTopicPattern());
 

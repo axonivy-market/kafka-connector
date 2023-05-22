@@ -1,5 +1,6 @@
 package com.axonivy.connector.kafka;
 
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -10,8 +11,8 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 public class DefaultTopicConsumerSupplier<K, V> implements KafkaTopicConsumerSupplier<K, V> {
 
 	@Override
-	public KafkaConsumer<K, V> apply(String configurationName, String topic) {
-		KafkaConsumer<K, V> consumer = KafkaService.get().createConsumer(configurationName);
+	public KafkaConsumer<K, V> apply(Properties properties, String topic) {
+		KafkaConsumer<K, V> consumer = KafkaService.get().createConsumer(properties);
 		consumer.subscribe(Pattern.compile(topic));
 		return consumer;
 	}
