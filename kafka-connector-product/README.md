@@ -63,10 +63,12 @@ is configred to connect exactly to this server.
 The connector was built to give you as much access as possible to the original Apache Kafka API
 while providing some useful semantics to use in Axon Ivy.
 
-### KafkaStartEvenBean
+### KafkaStartEventBean
 
 An `IProcessStartEvenBean` named `KafkaStartEventBean` is provided to listen to topics and start
-Ivy processes. This bean needs to be configured:
+Ivy processes. This bean needs to be configured.
+
+![KafkaStartEventBean](images/KafkaStartEventBean.png)
 
 **Topic Pattern**
 Enter a valid `java.util.regex.Pattern` as the topic to listen to. Note, that words without
