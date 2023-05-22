@@ -68,16 +68,24 @@ while providing some useful semantics to use in Axon Ivy.
 An `IProcessStartEvenBean` named `KafkaStartEventBean` is provided to listen to topics and start
 Ivy processes. This bean needs to be configured:
 
-Topic Pattern
-: Enter a valid `java.util.regex.Pattern` as the topic to listen to. Note, that words without
+**Topic Pattern**
+Enter a valid `java.util.regex.Pattern` as the topic to listen to. Note, that words without
 special chararcters are valid patterns. So there is no need to learn a special syntax to listen
 to simple topic names. Topic patterns are case sensitive
 
-Synchronous
-: When a message is received, will the bean wait until the started process gives back control
-(synchronous) or continue to receive messages in parallel (asynchronous).
+**Synchronous**
+When a message is received, will the bean wait until the started process gives back control
+(synchronous) or continue to receive messages in parallel (asynchronous)? All asynchronous
+beans will share a single thread pool which can be configured globally. Synchronous beans
+will use their own thread. In the default configuration, messages are commited automatically.
+If you want to commit messages yourself, you might want to switch to synchronous mode and
+use the supplied consumer to commit the message offset.
+
+**Configuration name**
 
 
 * Classpath problem
 * synchronous/asynchronous, thread pools
 * Hierarchical configuration 
+* Global config (workers)
+* Objecte in der data (consumer, consumerRecord)
