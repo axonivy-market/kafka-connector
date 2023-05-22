@@ -28,6 +28,18 @@ kafka-console-consumer --bootstrap-server localhost:9092 --topic TopicA
 ```
 Type `kafka-console-consumer --help` for usage.
 
+### KafkaStartEventBean
+
+The demo also contains examples of using a `KafkaStartEventBean`. Whenever
+you send a message from the Demo GUI, it will be received by one of the
+Demo listeners (which log them into the Runtime log).
+
+### Other tools
+
+On the web you will find stand-alone tools like [Offset Explorer](https://www.offsetexplorer.com) [^1] and web-based tools. These tools differ in their licence conditions, so please look at their web-pages.
+
+[^1]: Please note the licence conditions.
+
 
 
 ## Setup
@@ -38,3 +50,9 @@ Docker
 ```
 @variables.yaml@
 ```
+
+## Usage
+
+* Classpath problem
+* synchronous/asynchronous, thread pools
+* Hierarchical configuration 
