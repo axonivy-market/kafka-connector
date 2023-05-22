@@ -7,6 +7,10 @@
 #
 Variables:
   kafka-connector:
+    # Number of worker threads shared by all consumers to handle Kafka messages in parallel.
+    workerPoolSize: 10
+    # Consumer polling time in ms. Note, that messages are always received immediately. This is only the blocking timeout of the poll function.
+    pollTimeoutMs: 60000
     # for a list of configuration options see https://kafka.apache.org/documentation/
     default:
       # class used for key serialization

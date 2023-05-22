@@ -63,8 +63,6 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		String kafkaConfigurationName = getKafkaConfigurationName();
 		varConfiguration = KafkaService.get().getConfigurationProperties(kafkaConfigurationName);
 
-		// TODO Ivy is available here, but not in Runnable - find solution
-
 		// If any of the start beans is not synchronous, the worker pool is initialized.
 		synchronized (KafkaStartEventBean.class) {
 			if(!isSynchronous() && workerExecutor == null) {
@@ -91,7 +89,8 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 			}
 		}
 
-		consumerThread = new KafkaConsumerRunnable(kafkaConfigurationName, varConfiguration, topicConsumerSupplier);
+
+		consumerThread = new KafkaConsumerRunnable(varConfiguration, topicConsumerSupplier, Duration.ofMillis(KafkaService.get().getPollTimeoutMs()));
 		consumerExecutor = Executors.newSingleThreadExecutor(new NamingThreadFactory("kafka-consumer-" + consumerBeanCounter.incrementAndGet()));
 		consumerExecutor.execute(consumerThread);
 
@@ -191,14 +190,14 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		// TODO mention in doc, that we support Object. Nevertheless, the objects will be converted by the configured Deserializer and can be casted.
 		private KafkaConsumer<Object, Object> consumer = null;
 		private boolean synchronous = false;
-		private String configurationName;
 		private Properties properties;
-		private KafkaTopicConsumerSupplier topicConsumerSupplier;
+		private KafkaTopicConsumerSupplier<Object, Object> topicConsumerSupplier;
+		private Duration pollTimeout;
 
-		private KafkaConsumerRunnable(String configurationName, Properties properties, KafkaTopicConsumerSupplier topicConsumerSupplier) {
-			this.configurationName = configurationName;
+		private KafkaConsumerRunnable(Properties properties, KafkaTopicConsumerSupplier<Object, Object> topicConsumerSupplier, Duration pollTimeout) {
 			this.properties = properties;
 			this.topicConsumerSupplier = topicConsumerSupplier;
+			this.pollTimeout = pollTimeout;
 		}
 
 		@Override
@@ -208,13 +207,11 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 				log().debug("Handle Kafka messages synchronously: {0}", synchronous);
 
 				consumer = topicConsumerSupplier.apply(properties, getTopicPattern());
-
-				log().debug("Subscribed to Kafka topic pattern: {0}", getTopicPattern());
+				log().debug("Got consumer {0} which subscribed to Kafka topic pattern: {1}", consumer, getTopicPattern());
 
 				while(!consumerExecutor.isShutdown()) {
 					try {
-						// TODO put this time into a global variable, with 30s default
-						ConsumerRecords<Object, Object> records = consumer.poll(Duration.ofMillis(30*1000L));
+						ConsumerRecords<Object, Object> records = consumer.poll(pollTimeout);
 						for (ConsumerRecord<Object, Object> record : records) {
 							log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
 									record.topic(), record.offset(), record.key(), record.value(), record);
