@@ -75,12 +75,12 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		log().debug("Starting Kafka consumer for topic pattern: ''{0}'' and configuration name: ''{1}''",
 				getTopicPattern(), kafkaConfigurationName);
 
-		KafkaTopicConsumerSupplier<Object, Object> topicConsumerSupplier = new DefaultTopicConsumerSupplier<>();
+		KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier = new DefaultTopicConsumerSupplier<>();
 
 		String topicConsumerSupplierClass = KafkaService.get().getTopicConsumerSupplier();
 		if(topicConsumerSupplierClass != null) {
 			try {
-				topicConsumerSupplier = (KafkaTopicConsumerSupplier<Object, Object>) Class.forName(topicConsumerSupplierClass).getDeclaredConstructor().newInstance();
+				topicConsumerSupplier = (KafkaTopicConsumerSupplier<?, ?>) Class.forName(topicConsumerSupplierClass).getDeclaredConstructor().newInstance();
 			} catch (Exception e) {
 				log().error("Error while finding topic consumer supplier ''{0}'', falling back to default consumer supplier ''{1}''.",
 						topicConsumerSupplierClass, topicConsumerSupplier.getClass().getCanonicalName());
@@ -148,14 +148,14 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 
 	protected class KafkaWorkerRunnable implements Runnable {
 		private ExecutorService workerExecutor;
-		private ConsumerRecord<Object, Object> record;
-		private KafkaConsumer<Object, Object> consumer;
+		private ConsumerRecord<?, ?> record;
+		private KafkaConsumer<?, ?> consumer;
 
 		protected KafkaWorkerRunnable(ExecutorService executorService) {
 			this.workerExecutor = executorService;
 		}
 
-		public KafkaWorkerRunnable(ExecutorService workerExecutor, ConsumerRecord<Object, Object> record, KafkaConsumer<Object, Object> consumer) {
+		public KafkaWorkerRunnable(ExecutorService workerExecutor, ConsumerRecord<?, ?> record, KafkaConsumer<?, ?> consumer) {
 			this.workerExecutor = workerExecutor;
 			this.record = record;
 			this.consumer = consumer;
@@ -185,13 +185,13 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	}
 
 	protected class KafkaConsumerRunnable implements Runnable {
-		private KafkaConsumer<Object, Object> consumer = null;
+		private KafkaConsumer<?, ?> consumer = null;
 		private boolean synchronous = false;
 		private Properties properties;
-		private KafkaTopicConsumerSupplier<Object, Object> topicConsumerSupplier;
+		private KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier;
 		private Duration pollTimeout;
 
-		private KafkaConsumerRunnable(Properties properties, KafkaTopicConsumerSupplier<Object, Object> topicConsumerSupplier, Duration pollTimeout) {
+		private KafkaConsumerRunnable(Properties properties, KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier, Duration pollTimeout) {
 			this.properties = properties;
 			this.topicConsumerSupplier = topicConsumerSupplier;
 			this.pollTimeout = pollTimeout;
@@ -208,8 +208,8 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 
 				while(!consumerExecutor.isShutdown()) {
 					try {
-						ConsumerRecords<Object, Object> records = consumer.poll(pollTimeout);
-						for (ConsumerRecord<Object, Object> record : records) {
+						ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
+						for (ConsumerRecord<?, ?> record : records) {
 							log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
 									record.topic(), record.offset(), record.key(), record.value(), record);
 							KafkaWorkerRunnable kafkaWorkerRunnable = new KafkaWorkerRunnable(workerExecutor, record, consumer);
