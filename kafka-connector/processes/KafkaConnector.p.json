@@ -1,6 +1,6 @@
 {
   "format" : "10.0.0",
-  "id" : "18848D60C03A3ED6",
+  "id" : "188492F5DFE91EDF",
   "kind" : "CALLABLE_SUB",
   "config" : {
     "data" : "com.axonivy.connector.kafka.KafkaConnectorData"
@@ -13,19 +13,18 @@
         "callSignature" : "send",
         "input" : {
           "params" : [
-            { "name" : "configurationName", "type" : "String", "desc" : "Name of Kafka configuration" },
-            { "name" : "topic", "type" : "String", "desc" : "Topic to send to" },
-            { "name" : "key", "type" : "Object", "desc" : "Key object" },
-            { "name" : "value", "type" : "Object", "desc" : "Value object" }
+            { "name" : "configurationName", "type" : "String" },
+            { "name" : "topic", "type" : "String" },
+            { "name" : "key", "type" : "Object" },
+            { "name" : "value", "type" : "Object" }
           ],
           "map" : {
-            "out.configurationName" : "param.#configurationName",
-            "out.key" : "param.#key",
-            "out.topic" : "param.#topic",
-            "out.value" : "param.#value"
+            "out.configurationName" : "param.configurationName",
+            "out.key" : "param.key",
+            "out.topic" : "param.topic",
+            "out.value" : "param.value"
           }
-        },
-        "tags" : "connector"
+        }
       },
       "visual" : {
         "at" : { "x" : 96, "y" : 64 },
@@ -36,7 +35,7 @@
       "id" : "f1",
       "type" : "CallSubEnd",
       "visual" : {
-        "at" : { "x" : 368, "y" : 64 }
+        "at" : { "x" : 352, "y" : 64 }
       }
     }, {
       "id" : "f3",
@@ -46,8 +45,8 @@
         "output" : {
           "code" : [
             "import org.apache.kafka.clients.producer.ProducerRecord;",
-            "import org.apache.kafka.clients.producer.KafkaProducer;",
             "import com.axonivy.connector.kafka.KafkaService;",
+            "import org.apache.kafka.clients.producer.KafkaProducer;",
             "",
             "KafkaProducer producer = KafkaService.get().createProducer(in.configurationName);",
             "producer.send(new ProducerRecord(in.topic, in.key, in.value));"
@@ -55,7 +54,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 240, "y" : 64 }
+        "at" : { "x" : 224, "y" : 64 }
       },
       "connect" : { "id" : "f2", "to" : "f1" }
     } ]
