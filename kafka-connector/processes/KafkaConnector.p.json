@@ -1,0 +1,62 @@
+{
+  "format" : "10.0.0",
+  "id" : "18848D60C03A3ED6",
+  "kind" : "CALLABLE_SUB",
+  "config" : {
+    "data" : "com.axonivy.connector.kafka.KafkaConnectorData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "CallSubStart",
+      "name" : "send(String,String,Object,Object)",
+      "config" : {
+        "callSignature" : "send",
+        "input" : {
+          "params" : [
+            { "name" : "configurationName", "type" : "String", "desc" : "Name of Kafka configuration" },
+            { "name" : "topic", "type" : "String", "desc" : "Topic to send to" },
+            { "name" : "key", "type" : "Object", "desc" : "Key object" },
+            { "name" : "value", "type" : "Object", "desc" : "Value object" }
+          ],
+          "map" : {
+            "out.configurationName" : "param.#configurationName",
+            "out.key" : "param.#key",
+            "out.topic" : "param.#topic",
+            "out.value" : "param.#value"
+          }
+        },
+        "tags" : "connector"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 },
+        "icon" : "res:/webContent/icons/logo.png?small"
+      },
+      "connect" : { "id" : "f4", "to" : "f3" }
+    }, {
+      "id" : "f1",
+      "type" : "CallSubEnd",
+      "visual" : {
+        "at" : { "x" : 368, "y" : 64 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "Script",
+      "name" : "Send",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import org.apache.kafka.clients.producer.ProducerRecord;",
+            "import org.apache.kafka.clients.producer.KafkaProducer;",
+            "import com.axonivy.connector.kafka.KafkaService;",
+            "",
+            "KafkaProducer producer = KafkaService.get().createProducer(in.configurationName);",
+            "producer.send(new ProducerRecord(in.topic, in.key, in.value));"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 240, "y" : 64 }
+      },
+      "connect" : { "id" : "f2", "to" : "f1" }
+    } ]
+}

@@ -21,7 +21,7 @@
       "id" : "f1",
       "type" : "HtmlDialogEnd",
       "visual" : {
-        "at" : { "x" : 352, "y" : 64 }
+        "at" : { "x" : 368, "y" : 64 }
       }
     }, {
       "id" : "f6",
@@ -33,12 +33,12 @@
       "visual" : {
         "at" : { "x" : 96, "y" : 160 }
       },
-      "connect" : { "id" : "f15", "to" : "f8" }
+      "connect" : { "id" : "f23", "to" : "f14" }
     }, {
       "id" : "f7",
       "type" : "HtmlDialogEnd",
       "visual" : {
-        "at" : { "x" : 512, "y" : 240 }
+        "at" : { "x" : 368, "y" : 160 }
       }
     }, {
       "id" : "f9",
@@ -48,9 +48,9 @@
         "guid" : "18834B3B01CCBFAD"
       },
       "visual" : {
-        "at" : { "x" : 96, "y" : 240 }
+        "at" : { "x" : 96, "y" : 256 }
       },
-      "connect" : { "id" : "f18", "to" : "f16" }
+      "connect" : { "id" : "f15", "to" : "f21" }
     }, {
       "id" : "f12",
       "type" : "HtmlDialogEventStart",
@@ -59,70 +59,9 @@
         "guid" : "18834B3BCF249FC3"
       },
       "visual" : {
-        "at" : { "x" : 96, "y" : 320 }
+        "at" : { "x" : 96, "y" : 352 }
       },
-      "connect" : { "id" : "f19", "to" : "f17" }
-    }, {
-      "id" : "f3",
-      "type" : "Script",
-      "name" : "Send",
-      "config" : {
-        "output" : {
-          "code" : [
-            "import org.apache.kafka.clients.producer.ProducerRecord;",
-            "import org.apache.kafka.clients.producer.KafkaProducer;",
-            "import com.axonivy.connector.kafka.KafkaService;",
-            "",
-            "ivy.log.info(\"Sending to topic: ''{0}'', key: ''{1}'', value: ''{2}''\", in.topic, in.key, in.value);",
-            "",
-            "KafkaProducer producer = KafkaService.get().createProducer(in.configurationName);",
-            "producer.send(new ProducerRecord(in.topic, in.key, in.value));"
-          ]
-        }
-      },
-      "visual" : {
-        "at" : { "x" : 384, "y" : 240 }
-      },
-      "connect" : { "id" : "f5", "to" : "f7" }
-    }, {
-      "id" : "f8",
-      "type" : "Script",
-      "name" : "Set topic",
-      "config" : {
-        "output" : {
-          "code" : "in.topic = \"TopicA\";"
-        }
-      },
-      "visual" : {
-        "at" : { "x" : 224, "y" : 160 }
-      },
-      "connect" : { "id" : "f4", "to" : "f3" }
-    }, {
-      "id" : "f16",
-      "type" : "Script",
-      "name" : "Set topic",
-      "config" : {
-        "output" : {
-          "code" : "in.topic = \"TopicB\";"
-        }
-      },
-      "visual" : {
-        "at" : { "x" : 224, "y" : 240 }
-      },
-      "connect" : { "id" : "f20", "to" : "f3" }
-    }, {
-      "id" : "f17",
-      "type" : "Script",
-      "name" : "Set topic",
-      "config" : {
-        "output" : {
-          "code" : "in.topic = \"TopicS\";"
-        }
-      },
-      "visual" : {
-        "at" : { "x" : 224, "y" : 320 }
-      },
-      "connect" : { "id" : "f11", "to" : "f3" }
+      "connect" : { "id" : "f18", "to" : "f22" }
     }, {
       "id" : "f10",
       "type" : "Script",
@@ -136,16 +75,107 @@
             "KafkaService kafkaService = KafkaService.get();",
             "",
             "in.configurationName = \"localhost\";",
-            "in.configuration = kafkaService.getPropertiesString(kafkaService.getConfigurationProperties(in.configurationName));",
-            "",
             "in.key = \"my key\";",
-            "in.value = \"my value\";"
+            "in.value = \"my value\";",
+            "",
+            "// just for display in GUI",
+            "in.configuration = KafkaService.get().getPropertiesString(KafkaService.get().getConfigurationProperties(in.configurationName));"
           ]
         }
       },
       "visual" : {
-        "at" : { "x" : 224, "y" : 64 }
+        "at" : { "x" : 232, "y" : 64 }
       },
       "connect" : { "id" : "f2", "to" : "f1" }
+    }, {
+      "id" : "f14",
+      "type" : "SubProcessCall",
+      "name" : "Send TopicA",
+      "config" : {
+        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "call" : {
+          "params" : [
+            { "name" : "configurationName", "type" : "String" },
+            { "name" : "topic", "type" : "String" },
+            { "name" : "key", "type" : "Object" },
+            { "name" : "value", "type" : "Object" }
+          ],
+          "map" : {
+            "param.configurationName" : "in.configurationName",
+            "param.topic" : "\"TopicA\"",
+            "param.key" : "in.key",
+            "param.value" : "in.value"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 232, "y" : 160 },
+        "icon" : "res:/webContent/icons/logo.png"
+      },
+      "connect" : { "id" : "f5", "to" : "f7" }
+    }, {
+      "id" : "f21",
+      "type" : "SubProcessCall",
+      "name" : "Send TopicB",
+      "config" : {
+        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "call" : {
+          "params" : [
+            { "name" : "configurationName", "type" : "String" },
+            { "name" : "topic", "type" : "String" },
+            { "name" : "key", "type" : "Object" },
+            { "name" : "value", "type" : "Object" }
+          ],
+          "map" : {
+            "param.configurationName" : "in.configurationName",
+            "param.topic" : "\"TopicB\"",
+            "param.key" : "in.key",
+            "param.value" : "in.value"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 232, "y" : 256 },
+        "icon" : "res:/webContent/icons/logo.png"
+      },
+      "connect" : { "id" : "f8", "to" : "f4" }
+    }, {
+      "id" : "f22",
+      "type" : "SubProcessCall",
+      "name" : "Send TopicC",
+      "config" : {
+        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "call" : {
+          "params" : [
+            { "name" : "configurationName", "type" : "String" },
+            { "name" : "topic", "type" : "String" },
+            { "name" : "key", "type" : "Object" },
+            { "name" : "value", "type" : "Object" }
+          ],
+          "map" : {
+            "param.configurationName" : "in.configurationName",
+            "param.topic" : "\"TopicS\"",
+            "param.key" : "in.key",
+            "param.value" : "in.value"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 232, "y" : 352 },
+        "icon" : "res:/webContent/icons/logo.png"
+      },
+      "connect" : { "id" : "f11", "to" : "f3" }
+    }, {
+      "id" : "f3",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 368, "y" : 352 }
+      }
+    }, {
+      "id" : "f4",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 368, "y" : 256 }
+      }
     } ]
 }

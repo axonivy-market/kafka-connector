@@ -1,0 +1,6 @@
+KafkaConnectorData #class
+com.axonivy.connector.kafka #namespace
+configurationName String #field
+topic String #field
+key Object #field
+value Object #field
