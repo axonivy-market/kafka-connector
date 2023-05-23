@@ -8,11 +8,11 @@ import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.ivy.environment.IvyTest;
 
 @IvyTest
-public class KafkaConnectorTest{
-  
-  @Test
-  public void useIvy(){
-    Ivy.log().info("hi from JUnit");
-    assertThat(true).as("I can use Ivy API facade in tests").isEqualTo(true);
-  }
+public class KafkaConnectorConfigurationTest {
+
+	@Test
+	public void useIvy(){
+		Ivy.log().info("hi from JUnit");
+		assertThat(true).as("I can use Ivy API facade in tests").isEqualTo(true);
+	}
 }
