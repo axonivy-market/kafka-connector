@@ -37,7 +37,7 @@ Demo listeners (which log them into the Runtime log).
 
 ### Other tools
 
-On the web you will find stand-alone tools like [Offset Explorer](https://www.offsetexplorer.com) [^1]
+On the web you will find stand-alone tools like [Offset Explorer](https://www.offsetexplorer.com)
 and web-based tools. Please note the licence conditions.
 
 ## Setup
@@ -68,9 +68,14 @@ useful semantics for use in Axon Ivy.
 ### KafkaStartEventBean
 
 An `KafkaStartEventBean` for use in an Ivy *Program start* element is provided to listen
-to topics and start Ivy processes. This bean needs to be configured.
+to topics and start Ivy processes. Select this bean in the *Start* tab of a *Program start*
+element:
 
-![KafkaStartEventBean](images/KafkaStartEventBean.png)
+![KafkaStartEventBean](images/KafkaStartEventBeanEditor.png)
+
+Configure some additional properties in the *Editor* tab of the *Program start* element:
+
+![KafkaStartEventBean](images/KafkaStartEventBeanStart.png)
 
 **Topic Pattern**
 Enter a valid `java.util.regex.Pattern` as the topic to listen to. Note, that words without
