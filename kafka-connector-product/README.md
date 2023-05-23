@@ -1,6 +1,6 @@
 # Apache Kafka Connector
 
-Connect to Apache Kafka.
+Connect to [Apache Kafka](https://kafka.apache.org).
 
 This connector gives you access to one or more Apache Kafka message
 handling servers or clusters. It allows you to define multiple,
@@ -13,15 +13,16 @@ synchronously or asynchronously.
 
 ## Demo
 
-The demo provides a single dialog with quick sending buttons for different topics.
-You may enter a key and a value but it is ok, to use the same key and value for
-multiple messages.
+The demo provides a dialog with buttons for sending messages to different
+Apache Kafka *topics*. You may enter a *key* and a *value* but it is ok,
+to use the same key and value for multiple messages.
 
 To see the effect of sending messages you have multiple options:
 
 ### Apache Kafka command line
 
-Start a console consumer and see messages appearing on the console directly.
+Start a console consumer on the command line of a machine connected to
+the Apache Kafka server and see messages appearing on the console directly.
 
 ```
 kafka-console-consumer --bootstrap-server localhost:9092 --topic TopicA
@@ -36,11 +37,8 @@ Demo listeners (which log them into the Runtime log).
 
 ### Other tools
 
-On the web you will find stand-alone tools like [Offset Explorer](https://www.offsetexplorer.com) [^1] and web-based tools. These tools differ in their licence conditions, so please look at their web-pages.
-
-[^1]: Please note the licence conditions.
-
-
+On the web you will find stand-alone tools like [Offset Explorer](https://www.offsetexplorer.com) [^1]
+and web-based tools. Please note the licence conditions.
 
 ## Setup
 
@@ -50,23 +48,27 @@ If you do not have access to an existing Apache Kafka, you may quickly start one
 in a docker container. You may want to use the provided docker compose file
 [docker-compose.yml](files/docker-compose.yml) as a starter.
 
-Copy this file to your machine and `cd`to the directory. Enter there the command
+Copy this file to your machine and `cd` to the directory containing this file.
+Enter there the command
+
 ```
 docker-compose up -d
 ```
+
 and docker will start a `zookeeper` server on port 2181  and a `kafka` server on port 9092. To
 connect to this server, use `localhost:9092` as your bootstrap server. Note, that the demo
-is configred to connect exactly to this server.
+is configured to connect to this server.
 
 ## Usage
 
-The connector was built to give you as much access as possible to the original Apache Kafka API
-while providing some useful semantics to use in Axon Ivy.
+The connector was built to give you as much access as possible to the original
+[Apache Kafka API](https://kafka.apache.org/34/javadoc/) while providing some
+useful semantics for use in Axon Ivy.
 
 ### KafkaStartEventBean
 
-An `IProcessStartEvenBean` named `KafkaStartEventBean` is provided to listen to topics and start
-Ivy processes. This bean needs to be configured.
+An `KafkaStartEventBean` for use in an Ivy *Program start* element is provided to listen
+to topics and start Ivy processes. This bean needs to be configured.
 
 ![KafkaStartEventBean](images/KafkaStartEventBean.png)
 
