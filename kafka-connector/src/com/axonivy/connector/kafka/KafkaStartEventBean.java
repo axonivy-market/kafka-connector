@@ -67,7 +67,6 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		synchronized (KafkaStartEventBean.class) {
 			if(!isSynchronous() && workerExecutor == null) {
 				int workerPoolSize = KafkaService.get().getWorkerPoolSize();
-				// TODO describe that all listeners are shared
 				log().info("Found (at least) one asynchronous topic consumer, creating {0} Kafka worker threads.", workerPoolSize);
 				workerExecutor = Executors.newFixedThreadPool(workerPoolSize, new NamingThreadFactory("kafka-worker-%d"));
 			}
@@ -76,7 +75,6 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		log().debug("Starting Kafka consumer for topic pattern: ''{0}'' and configuration name: ''{1}''",
 				getTopicPattern(), kafkaConfigurationName);
 
-		// TODO describe consumer supplier in doc
 		KafkaTopicConsumerSupplier<Object, Object> topicConsumerSupplier = new DefaultTopicConsumerSupplier<>();
 
 		String topicConsumerSupplierClass = KafkaService.get().getTopicConsumerSupplier();
@@ -187,7 +185,6 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	}
 
 	protected class KafkaConsumerRunnable implements Runnable {
-		// TODO mention in doc, that we support Object. Nevertheless, the objects will be converted by the configured Deserializer and can be casted.
 		private KafkaConsumer<Object, Object> consumer = null;
 		private boolean synchronous = false;
 		private Properties properties;
@@ -222,7 +219,6 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 							else {
 								workerExecutor.execute(kafkaWorkerRunnable);
 							}
-							// TODO describe in doc, that if enable.auto.commit is set to false, then commit must be done in the process (via the consumer object). Note, that commit is only possible for an offset and means that all lower offsets are commited.  
 						}
 					} catch (WakeupException e) {
 						log().info("Consumer was woken up. This is ok, when there is a shutdown.");
