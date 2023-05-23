@@ -71,11 +71,11 @@ An `KafkaStartEventBean` for use in an Ivy *Program start* element is provided t
 to topics and start Ivy processes. Select this bean in the *Start* tab of a *Program start*
 element:
 
-![KafkaStartEventBean](images/KafkaStartEventBeanEditor.png)
+![KafkaStartEventBean](images/KafkaStartEventBeanStart.png)
 
 Configure some additional properties in the *Editor* tab of the *Program start* element:
 
-![KafkaStartEventBean](images/KafkaStartEventBeanStart.png)
+![KafkaStartEventBean](images/KafkaStartEventBeanEditor.png)
 
 **Topic Pattern**
 Enter a valid `java.util.regex.Pattern` as the topic to listen to. Note, that words without
