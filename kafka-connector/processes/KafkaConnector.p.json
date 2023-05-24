@@ -24,7 +24,8 @@
             "out.topic" : "param.topic",
             "out.value" : "param.value"
           }
-        }
+        },
+        "tags" : "connector"
       },
       "visual" : {
         "at" : { "x" : 96, "y" : 64 },

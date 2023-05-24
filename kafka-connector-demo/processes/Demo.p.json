@@ -12,7 +12,8 @@
         "callSignature" : "start",
         "startDescription" : "Send Kafka messages for different topics in a simple GUI.",
         "outLink" : "start.ivp",
-        "startName" : "Send Kafka messages"
+        "startName" : "Send Kafka messages",
+        "tags" : "demo"
       },
       "visual" : {
         "at" : { "x" : 96, "y" : 64 }
