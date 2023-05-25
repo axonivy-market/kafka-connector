@@ -1,0 +1,181 @@
+{
+  "format" : "10.0.0",
+  "id" : "18834AC5BA150030",
+  "kind" : "HTML_DIALOG",
+  "config" : {
+    "data" : "com.axonivy.connector.kafka.demo.DemoGui.DemoGuiData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "HtmlDialogStart",
+      "name" : "start()",
+      "config" : {
+        "callSignature" : "start",
+        "guid" : "18834AC5BA45AC25"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 }
+      },
+      "connect" : { "id" : "f13", "to" : "f10" }
+    }, {
+      "id" : "f1",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 368, "y" : 64 }
+      }
+    }, {
+      "id" : "f6",
+      "type" : "HtmlDialogEventStart",
+      "name" : "sendTopicA",
+      "config" : {
+        "guid" : "18834B3A7CBD6526"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 160 }
+      },
+      "connect" : { "id" : "f8", "to" : "f5" }
+    }, {
+      "id" : "f7",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 368, "y" : 160 }
+      }
+    }, {
+      "id" : "f9",
+      "type" : "HtmlDialogEventStart",
+      "name" : "sendTopicB",
+      "config" : {
+        "guid" : "18834B3B01CCBFAD"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 256 }
+      },
+      "connect" : { "id" : "f16", "to" : "f14" }
+    }, {
+      "id" : "f12",
+      "type" : "HtmlDialogEventStart",
+      "name" : "sendTopicS",
+      "config" : {
+        "guid" : "18834B3BCF249FC3"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 352 }
+      },
+      "connect" : { "id" : "f18", "to" : "f15" }
+    }, {
+      "id" : "f10",
+      "type" : "Script",
+      "name" : "Initialize",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.connector.kafka.KafkaService;",
+            "import com.axonivy.connector.kafka.demo.DemoService;",
+            "",
+            "KafkaService kafkaService = KafkaService.get();",
+            "",
+            "in.configurationName = \"localhost\";",
+            "in.key = \"my key\";",
+            "in.value = \"my value\";",
+            "",
+            "// just for display in GUI",
+            "in.configuration = KafkaService.get().getPropertiesString(KafkaService.get().getConfigurationProperties(in.configurationName));"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 64 }
+      },
+      "connect" : { "id" : "f2", "to" : "f1" }
+    }, {
+      "id" : "f3",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 368, "y" : 352 }
+      }
+    }, {
+      "id" : "f4",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 368, "y" : 256 }
+      }
+    }, {
+      "id" : "f5",
+      "type" : "SubProcessCall",
+      "name" : "Send TopicA",
+      "config" : {
+        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "call" : {
+          "params" : [
+            { "name" : "configurationName", "type" : "String" },
+            { "name" : "topic", "type" : "String" },
+            { "name" : "key", "type" : "Object" },
+            { "name" : "value", "type" : "Object" }
+          ],
+          "map" : {
+            "param.configurationName" : "in.configurationName",
+            "param.topic" : "\"TopicA\"",
+            "param.key" : "in.key",
+            "param.value" : "in.value"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 160 },
+        "icon" : "res:/webContent/icons/logo.png"
+      },
+      "connect" : { "id" : "f11", "to" : "f7" }
+    }, {
+      "id" : "f14",
+      "type" : "SubProcessCall",
+      "name" : "Send TopicB",
+      "config" : {
+        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "call" : {
+          "params" : [
+            { "name" : "configurationName", "type" : "String" },
+            { "name" : "topic", "type" : "String" },
+            { "name" : "key", "type" : "Object" },
+            { "name" : "value", "type" : "Object" }
+          ],
+          "map" : {
+            "param.configurationName" : "in.configurationName",
+            "param.topic" : "\"TopicB\"",
+            "param.key" : "in.key",
+            "param.value" : "in.value"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 256 },
+        "icon" : "res:/webContent/icons/logo.png"
+      },
+      "connect" : { "id" : "f17", "to" : "f4" }
+    }, {
+      "id" : "f15",
+      "type" : "SubProcessCall",
+      "name" : "Send TopicS",
+      "config" : {
+        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "call" : {
+          "params" : [
+            { "name" : "configurationName", "type" : "String" },
+            { "name" : "topic", "type" : "String" },
+            { "name" : "key", "type" : "Object" },
+            { "name" : "value", "type" : "Object" }
+          ],
+          "map" : {
+            "param.configurationName" : "in.configurationName",
+            "param.topic" : "\"TopicS\"",
+            "param.key" : "in.key",
+            "param.value" : "in.value"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 352 },
+        "icon" : "res:/webContent/icons/logo.png"
+      },
+      "connect" : { "id" : "f19", "to" : "f3" }
+    } ]
+}

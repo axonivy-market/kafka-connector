@@ -1,0 +1,32 @@
+# == Variables ==
+# 
+# You can define here your project Variables.
+# If you want to define/override a Variable for a specific Environment, 
+# add an additional ‘variables.yaml’ file in a subdirectory in the ‘Config’ folder: 
+# '<project>/Config/_<environment>/variables.yaml
+#
+Variables:
+  kafka-connector:
+    # Number of worker threads shared by all consumers to handle Kafka messages in parallel.
+    workerPoolSize: 10
+    # Consumer polling time in ms. Note, that messages are always received immediately. This is only the blocking timeout of the poll function.
+    pollTimeoutMs: 60000
+    # for a list of configuration options see https://kafka.apache.org/documentation/
+    default:
+      # class used for key serialization
+      key.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+      # class used for value serialization
+      value.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+      # class used for key deserialization
+      key.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+      # class used for value deserialization
+      value.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+      # should messages be auto-committed?
+      enable.auto.commit: true
+      # where to start reading if there was not yet any offset found for the client
+      auto.offset.reset: 'earliest'
+      # group id
+      group.id: 'AxonIvy'
+      
+
+      
