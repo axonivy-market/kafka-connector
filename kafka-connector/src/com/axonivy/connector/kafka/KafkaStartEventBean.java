@@ -4,19 +4,17 @@
 package com.axonivy.connector.kafka;
 
 import java.time.Duration;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -24,6 +22,7 @@ import ch.ivyteam.ivy.process.eventstart.AbstractProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBeanRuntime;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventResponse;
+import ch.ivyteam.ivy.process.eventstart.IProcessStarter;
 import ch.ivyteam.ivy.process.extension.ui.ExtensionUiBuilder;
 import ch.ivyteam.ivy.process.extension.ui.IUiFieldEditor;
 import ch.ivyteam.ivy.process.extension.ui.UiEditorExtension;
@@ -36,15 +35,11 @@ import ch.ivyteam.util.CleanProperties;
  * {@link IProcessStartEventBean} to listen to Apache Kafka topics.
  */
 public class KafkaStartEventBean extends AbstractProcessStartEventBean {
-	private static final AtomicInteger consumerBeanCounter = new AtomicInteger(0);
 	private static final String KAFKA_CONFIGURATION_NAME_FIELD = "kafkaConfigurationNameField";
 	private static final String TOPIC_PATTERN_FIELD = "topicPatternField";
 	private static final String SYNCHRONOUS_FIELD = "synchronousField";
-	private static ExecutorService workerExecutor;
-	private ExecutorService consumerExecutor;
-	private KafkaConsumerRunnable consumerThread;
 	private Properties beanConfiguration;
-	private Properties varConfiguration;
+	private KafkaReader reader = new KafkaReader();
 
 	public KafkaStartEventBean() {
 		super("KafkaStartEventBean", "Listen on Kafka topics");
@@ -54,23 +49,16 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	public void initialize(IProcessStartEventBeanRuntime eventRuntime, String configuration) {
 		super.initialize(eventRuntime, configuration);
 		log().debug("Initializing with configuration: {0}", getConfiguration());
-		eventRuntime.setPollTimeInterval(0);
+		eventRuntime.poll().disable();
+		eventRuntime.threads().boundToEventLifecycle(reader::run);
 		beanConfiguration = new CleanProperties(getConfiguration()).getWrappedProperties();
 	}
+	
 
 	@Override
-	public void start(IProgressMonitor monitor) throws ServiceException {
+	public synchronized void start(IProgressMonitor monitor) throws ServiceException {
 		String kafkaConfigurationName = getKafkaConfigurationName();
-		varConfiguration = KafkaService.get().getConfigurationProperties(kafkaConfigurationName);
-
-		// If any of the start beans is not synchronous, the worker pool is initialized.
-		synchronized (KafkaStartEventBean.class) {
-			if(!isSynchronous() && workerExecutor == null) {
-				int workerPoolSize = KafkaService.get().getWorkerPoolSize();
-				log().info("Found (at least) one asynchronous topic consumer, creating {0} Kafka worker threads.", workerPoolSize);
-				workerExecutor = Executors.newFixedThreadPool(workerPoolSize, new NamingThreadFactory("kafka-worker-%d"));
-			}
-		}
+		var kafkaConfig = KafkaService.get().getConfigurationProperties(kafkaConfigurationName);
 
 		log().debug("Starting Kafka consumer for topic pattern: ''{0}'' and configuration name: ''{1}''",
 				getTopicPattern(), kafkaConfigurationName);
@@ -86,41 +74,14 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 						topicConsumerSupplierClass, topicConsumerSupplier.getClass().getCanonicalName());
 			}
 		}
-
-
-		consumerThread = new KafkaConsumerRunnable(varConfiguration, topicConsumerSupplier, Duration.ofMillis(KafkaService.get().getPollTimeoutMs()));
-		consumerExecutor = Executors.newSingleThreadExecutor(new NamingThreadFactory("kafka-consumer-" + consumerBeanCounter.incrementAndGet()));
-		consumerExecutor.execute(consumerThread);
-
+		reader.start(kafkaConfig, topicConsumerSupplier, isSynchronous(), Duration.ofMillis(KafkaService.get().getPollTimeoutMs()));
 		super.start(monitor);
 		log().info("Started");
 	}
-
+	
 	@Override
-	public void stop(IProgressMonitor monitor) throws ServiceException {
-		if(consumerExecutor != null) {
-			consumerExecutor.shutdown();
-			consumerThread.wakeup();
-			try {
-				consumerExecutor.awaitTermination(10, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				log().error("Waiting was interrupted", e);
-			}
-		}
-
-		synchronized (KafkaStartEventBean.class) {
-			if(workerExecutor != null) {
-				log().info("Shutting down Kafka worker threads");
-				workerExecutor.shutdown();
-				try {
-					workerExecutor.awaitTermination(10, TimeUnit.SECONDS);
-				} catch (InterruptedException e) {
-					log().error("Waiting was interrupted", e);
-				}
-				workerExecutor = null;
-			}
-		}
-
+	public synchronized void stop(IProgressMonitor monitor) throws ServiceException {
+		reader.stop();
 		super.stop(monitor);
 	}
 
@@ -145,123 +106,121 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		String synchronousString = beanConfiguration.getProperty(SYNCHRONOUS_FIELD);
 		return StringUtils.isNotBlank(synchronousString) && Boolean.valueOf(synchronousString);
 	}
-
-	protected class KafkaWorkerRunnable implements Runnable {
-		private ExecutorService workerExecutor;
-		private ConsumerRecord<?, ?> record;
+	
+	private final class KafkaReader {
+		private record AsyncRequest(ConsumerRecord<?,?> record, Future<IProcessStartEventResponse> future) {};
+		private ArrayList<AsyncRequest> asyncRequests = new ArrayList<>();
+		private Properties configuration;
+		private KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier;
+		private boolean synchronous;
+		private Duration pollTimeout;
 		private KafkaConsumer<?, ?> consumer;
 
-		protected KafkaWorkerRunnable(ExecutorService executorService) {
-			this.workerExecutor = executorService;
-		}
-
-		public KafkaWorkerRunnable(ExecutorService workerExecutor, ConsumerRecord<?, ?> record, KafkaConsumer<?, ?> consumer) {
-			this.workerExecutor = workerExecutor;
-			this.record = record;
-			this.consumer = consumer;
-		}
-
-		@Override
-		public void run() {
-			if(!workerExecutor.isShutdown()) {
-				try {
-					log().debug("Firing task to handle Kafka topic ''{0}'' offset {1}.", record.topic(), record.offset());
-					IProcessStartEventResponse eventResponse = getEventBeanRuntime().fireProcessStartEventRequest(null, "Received Kafka record " + record, Map.of("consumer", consumer, "consumerRecord", record));
-					log().debug("Kafka topic ''{0}'', offset {1} was handled by task {2} and returned with parameters: {3}.",
-							record.topic(), record.offset(), eventResponse.getStartedTask().getId(),
-							eventResponse.getParameters().keySet().stream().sorted().collect(Collectors.joining(", ")));
-				} catch (RequestException e) {
-					log().error("Kafka topic ''{0}'', offset {1} caused exception while firing a new task.", e, record.topic(), record.offset());
-				}
-			}
-		}
-
-		/**
-		 * Try to wake up so that checking for shutdown is done earlier.
-		 */
-		public void wakeup() {
-			// NOOP
-		}
-	}
-
-	protected class KafkaConsumerRunnable implements Runnable {
-		private KafkaConsumer<?, ?> consumer = null;
-		private boolean synchronous = false;
-		private Properties properties;
-		private KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier;
-		private Duration pollTimeout;
-
-		private KafkaConsumerRunnable(Properties properties, KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier, Duration pollTimeout) {
-			this.properties = properties;
+		public synchronized void start(Properties configuration, KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier, boolean synchronous, Duration pollTimeout) {
+			this.configuration = configuration;
 			this.topicConsumerSupplier = topicConsumerSupplier;
+			this.synchronous = synchronous;
 			this.pollTimeout = pollTimeout;
 		}
-
-		@Override
-		public void run() {
-			try {
-				synchronous = isSynchronous();
-				log().debug("Handle Kafka messages synchronously: {0}", synchronous);
-
-				consumer = topicConsumerSupplier.apply(properties, getTopicPattern());
-				log().debug("Got consumer {0} which subscribed to Kafka topic pattern: {1}", consumer, getTopicPattern());
-
-				while(!consumerExecutor.isShutdown()) {
-					try {
-						ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
-						for (ConsumerRecord<?, ?> record : records) {
-							log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
-									record.topic(), record.offset(), record.key(), record.value(), record);
-							KafkaWorkerRunnable kafkaWorkerRunnable = new KafkaWorkerRunnable(workerExecutor, record, consumer);
-							if(synchronous) {
-								kafkaWorkerRunnable.run();
-							}
-							else {
-								workerExecutor.execute(kafkaWorkerRunnable);
-							}
-						}
-					} catch (WakeupException e) {
-						log().info("Consumer was woken up. This is ok, when there is a shutdown.");
-					}
-				}
-			}
-			catch(Exception e) {
-				log().error("Exception while listening for topic, closing consumer.", e);
-			}
-			finally {
-				if(consumer != null) {
-					consumer.close();
-				}
-			}
-		}
-
-		public void wakeup() {
+		
+		public void stop() {
 			if(consumer != null) {
 				consumer.wakeup();
 			}
 		}
-	}
 
-	/**
-	 * A {@link ThreadFactory} which gives threads a configurable name.
-	 */
-	protected static class NamingThreadFactory implements ThreadFactory {
+		private void run() {
+			try {
+				try {
+					log().debug("Handle Kafka messages synchronously: {0}", synchronous);
+					
+					createConsumer();
 
-		private String pattern;
-		private static ThreadFactory defaultThreadFactory;
-		private static AtomicInteger threadCount = new AtomicInteger(0);
-
-		protected NamingThreadFactory(String pattern) {
-			defaultThreadFactory = Executors.defaultThreadFactory();
-			this.pattern = pattern;
+					while(!Thread.currentThread().isInterrupted()) {
+						ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
+						for (ConsumerRecord<?, ?> record : records) {
+							log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
+									record.topic(), record.offset(), record.key(), record.value(), record);
+							
+							startProcess(record, synchronous);
+						}
+						consumeAsyncRequests();
+					}
+				} finally {
+					closeConsumer();
+				}
+			} catch (WakeupException | InterruptException e) {
+				log().info("Consumer was woken up. This is ok, when there is a shutdown.");
+				return;
+			}
+			catch(Exception e) {
+				log().error("Exception while listening for topic, closing consumer.", e);
+				throw new RuntimeException("Exception while listening for topic.", e);
+			}
 		}
 
-		@Override
-		public Thread newThread(Runnable runnable) {
-			Thread thread = defaultThreadFactory.newThread(runnable);
-			thread.setName(String.format(pattern, threadCount.incrementAndGet()));
-			return thread;
+		
+		private void startProcess(ConsumerRecord<?, ?> record, boolean synchronous) {
+			log().debug("Firing task to handle Kafka topic ''{0}'' offset {1}.", record.topic(), record.offset());
+			IProcessStarter processStarter = getEventBeanRuntime()
+					.processStarter()
+					.withReason("Received Kafka record " + record)
+					.withParameter("consumer", consumer)
+					.withParameter("consumerRecord", record);
+			if (synchronous) {
+				try {
+					var eventResponse = processStarter.start();
+					logResponse(record, eventResponse);
+				} catch (RequestException e) {
+					logError(record, e);
+				}
+			} else {
+				asyncRequests.add(new AsyncRequest(record, processStarter.startAsync()));
+			}
 		}
+
+		private void logError(ConsumerRecord<?, ?> record, Exception e) {
+			log().error("Kafka topic ''{0}'', offset {1} caused exception while firing a new task.", e, record.topic(), record.offset());
+		}
+
+		private void logResponse(ConsumerRecord<?, ?> record, IProcessStartEventResponse eventResponse) {
+			log().debug("Kafka topic ''{0}'', offset {1} was handled by task {2} and returned with parameters: {3}.",
+					record.topic(), record.offset(), eventResponse.getStartedTask().getId(),
+					eventResponse.getParameters().keySet().stream().sorted().collect(Collectors.joining(", ")));
+		}
+		
+		private void consumeAsyncRequests() {
+			var consumed = new ArrayList<AsyncRequest>();
+			for (var asyncRequest : asyncRequests) {
+				if (asyncRequest.future.isDone()) {
+					consumed.add(asyncRequest);
+					try {
+						var eventResponse = asyncRequest.future.get();
+						logResponse(asyncRequest.record, eventResponse);
+					} catch(ExecutionException ex) {
+						logError(asyncRequest.record, ex);
+					}
+					catch(InterruptedException ex) {
+						Thread.currentThread().interrupt();
+						return;
+					}
+				}
+			}
+			asyncRequests.removeAll(consumed);
+		}
+		
+		private synchronized void createConsumer() {
+			consumer = topicConsumerSupplier.apply(configuration, getTopicPattern());
+			log().debug("Got consumer {0} which subscribed to Kafka topic pattern: {1}", consumer, getTopicPattern());
+		}
+
+		private synchronized void closeConsumer() {
+			if(consumer != null) {
+				consumer.close();
+			}
+			consumer = null;
+		}
+
 	}
 
 	/**
