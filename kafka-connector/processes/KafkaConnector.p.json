@@ -1,5 +1,5 @@
 {
-  "format" : "10.0.0",
+  "$schema" : "https://json-schema.axonivy.com/process/11.2.1/process.json",
   "id" : "188492F5DFE91EDF",
   "kind" : "CALLABLE_SUB",
   "config" : {
@@ -10,13 +10,13 @@
       "type" : "CallSubStart",
       "name" : "send(String,String,Object,Object)",
       "config" : {
-        "callSignature" : "send",
+        "signature" : "send",
         "input" : {
           "params" : [
-            { "name" : "configurationName", "type" : "String" },
-            { "name" : "topic", "type" : "String" },
-            { "name" : "key", "type" : "Object" },
-            { "name" : "value", "type" : "Object" }
+            { "name" : "configurationName", "type" : "String", "desc" : "" },
+            { "name" : "topic", "type" : "String", "desc" : "" },
+            { "name" : "key", "type" : "Object", "desc" : "" },
+            { "name" : "value", "type" : "Object", "desc" : "" }
           ],
           "map" : {
             "out.configurationName" : "param.configurationName",
@@ -24,14 +24,18 @@
             "out.topic" : "param.topic",
             "out.value" : "param.value"
           }
-        },
-        "tags" : "connector"
+        }
       },
+      "tags" : [
+        "connector"
+      ],
       "visual" : {
         "at" : { "x" : 96, "y" : 64 },
         "icon" : "res:/webContent/icons/logo.png?small"
       },
-      "connect" : { "id" : "f4", "to" : "f3" }
+      "connect" : [
+        { "id" : "f4", "to" : "f3" }
+      ]
     }, {
       "id" : "f1",
       "type" : "CallSubEnd",
@@ -57,6 +61,8 @@
       "visual" : {
         "at" : { "x" : 224, "y" : 64 }
       },
-      "connect" : { "id" : "f2", "to" : "f1" }
+      "connect" : [
+        { "id" : "f2", "to" : "f1" }
+      ]
     } ]
 }
