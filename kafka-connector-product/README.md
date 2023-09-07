@@ -1,15 +1,12 @@
 # Apache Kafka Connector
 
-Connect to [Apache Kafka](https://kafka.apache.org).
-
-This connector gives you access to one or more Apache Kafka message
-handling servers or clusters. It allows you to define multiple,
-inheriting connection configurations and lets you quickly create
-a `KafkaConsumer` or a `KafkaProducer`.
-
-Additionally, this connector provides an `IProcessStartEventBean` which
-can be used to start Ivy processes which react on Apache Kafka messages
-synchronously or asynchronously. 
+Axon Ivy’s [Apache Kafka](https://kafka.apache.org/) connector helps you accelerate process automation initiatives by providing a unified, high-throughput, low-latency platform for handling real-time data feeds. This connector:
+- Is based on the [Apache Kafka API](https://kafka.apache.org/34/javadoc/).
+- Gives you access to one or more Apache Kafka message-handling servers or clusters. 
+- Allows you to define multiple, inheriting connection configurations and lets you quickly create a `KafkaConsumer` or a `KafkaProducer`.
+- Provides an `IProcessStartEventBean` which can be used to start Ivy processes that react on Apache Kafka messages synchronously or asynchronously.
+- Supports you with an easy-to-copy demo implementation to reduce your integration effort.
+- Enables low-code citizen developers to integrate existing 3rd party systems.
 
 ## Demo
 
