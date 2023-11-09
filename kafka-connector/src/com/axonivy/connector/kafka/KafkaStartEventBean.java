@@ -23,13 +23,12 @@ import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBeanRuntime;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventResponse;
 import ch.ivyteam.ivy.process.eventstart.IProcessStarter;
+import ch.ivyteam.ivy.process.extension.ProgramConfig;
 import ch.ivyteam.ivy.process.extension.ui.ExtensionUiBuilder;
-import ch.ivyteam.ivy.process.extension.ui.IUiFieldEditor;
 import ch.ivyteam.ivy.process.extension.ui.UiEditorExtension;
 import ch.ivyteam.ivy.request.RequestException;
 import ch.ivyteam.ivy.service.ServiceException;
 import ch.ivyteam.log.Logger;
-import ch.ivyteam.util.CleanProperties;
 
 /**
  * {@link IProcessStartEventBean} to listen to Apache Kafka topics.
@@ -38,7 +37,6 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	private static final String KAFKA_CONFIGURATION_NAME_FIELD = "kafkaConfigurationNameField";
 	private static final String TOPIC_PATTERN_FIELD = "topicPatternField";
 	private static final String SYNCHRONOUS_FIELD = "synchronousField";
-	private Properties beanConfiguration;
 	private KafkaReader reader = new KafkaReader();
 
 	public KafkaStartEventBean() {
@@ -46,14 +44,12 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	}
 
 	@Override
-	public void initialize(IProcessStartEventBeanRuntime eventRuntime, String configuration) {
+	public void initialize(IProcessStartEventBeanRuntime eventRuntime, ProgramConfig configuration) {
 		super.initialize(eventRuntime, configuration);
-		log().debug("Initializing with configuration: {0}", getConfiguration());
+		log().debug("Initializing with configuration: {0}", configuration);
 		eventRuntime.poll().disable();
 		eventRuntime.threads().boundToEventLifecycle(reader::run);
-		beanConfiguration = new CleanProperties(getConfiguration()).getWrappedProperties();
 	}
-	
 
 	@Override
 	public synchronized void start(IProgressMonitor monitor) throws ServiceException {
@@ -95,15 +91,15 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	}
 
 	protected String getKafkaConfigurationName() {
-		return beanConfiguration.getProperty(KAFKA_CONFIGURATION_NAME_FIELD);
+		return getConfig().get(KAFKA_CONFIGURATION_NAME_FIELD);
 	}
 
 	protected String getTopicPattern() {
-		return beanConfiguration.getProperty(TOPIC_PATTERN_FIELD);
+		return getConfig().get(TOPIC_PATTERN_FIELD);
 	}
 
 	protected boolean isSynchronous() {
-		String synchronousString = beanConfiguration.getProperty(SYNCHRONOUS_FIELD);
+		String synchronousString = getConfig().get(SYNCHRONOUS_FIELD);
 		return StringUtils.isNotBlank(synchronousString) && Boolean.valueOf(synchronousString);
 	}
 	
@@ -227,20 +223,17 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	 * The editor to configure a {@link KafkaStartEventBean}.
 	 */
 	public static class Editor extends UiEditorExtension {
-		private IUiFieldEditor topicPatternField;
-		private IUiFieldEditor synchronousField;
-		private IUiFieldEditor kafkaConfigurationNameField;
 
 		@Override
 		public void initUiFields(ExtensionUiBuilder ui) {
 			ui.label("Topic Pattern:").create();
-			topicPatternField = ui.textField().create();
+			ui.textField(TOPIC_PATTERN_FIELD).create();
 
 			ui.label("Synchronous:").create();
-			synchronousField = ui.textField().create();
+			ui.textField(SYNCHRONOUS_FIELD).create();
 
 			ui.label("Configuration Base:").create();
-			kafkaConfigurationNameField = ui.textField().create();
+			ui.textField(KAFKA_CONFIGURATION_NAME_FIELD).create();
 
 			String helpTopic = String.format("""
 					Topic pattern:
@@ -267,29 +260,6 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 					%s which defines a specific Kafka consumer configuration.
 					""", KafkaService.get().getKafkaGlobalVariableName());
 			ui.label(helpTopic).multiline().create();
-		}
-
-		@Override
-		protected void loadUiDataFromConfiguration() {
-			topicPatternField.setText(getBeanConfigurationProperty(TOPIC_PATTERN_FIELD));
-			String synchronous = getBeanConfigurationProperty(SYNCHRONOUS_FIELD);
-			if(StringUtils.isBlank(synchronous) || !Boolean.valueOf(synchronous)) {
-				Logger.getLogger(KafkaStartEventBean.class).warn("Correcting synchronous value '" + synchronous + "' to false");
-				synchronous = "false";
-			}
-			synchronousField.setText(synchronous);
-			kafkaConfigurationNameField.setText(getBeanConfigurationProperty(KAFKA_CONFIGURATION_NAME_FIELD));
-		}
-
-		@Override
-		protected boolean saveUiDataToConfiguration() {
-			// Clear the bean configuration and all its properties to flush outdated configurations.
-			clearBeanConfiguration();
-
-			setBeanConfigurationProperty(TOPIC_PATTERN_FIELD, topicPatternField.getText());
-			setBeanConfigurationProperty(SYNCHRONOUS_FIELD, synchronousField.getText());
-			setBeanConfigurationProperty(KAFKA_CONFIGURATION_NAME_FIELD, kafkaConfigurationNameField.getText());
-			return true;
 		}
 	}
 }
