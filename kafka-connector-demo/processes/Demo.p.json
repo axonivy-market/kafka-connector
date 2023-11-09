@@ -1,5 +1,5 @@
 {
-  "$schema" : "https://json-schema.axonivy.com/process/11.2.1/process.json",
+  "$schema" : "https://json-schema.axonivy.com/process/11.2.2/process.json",
   "id" : "18833AFFFC2AC1DD",
   "config" : {
     "data" : "com.axonivy.connector.kafka.demo.DemoData"
@@ -36,11 +36,11 @@
       "name" : "TopicA",
       "config" : {
         "javaClass" : "com.axonivy.connector.kafka.KafkaStartEventBean",
-        "userConfig" : [
-          "kafkaConfigurationNameField=localhost",
-          "synchronousField=false",
-          "topicPatternField=TopicA"
-        ],
+        "userConfig" : {
+          "kafkaConfigurationNameField" : "localhost",
+          "synchronousField" : "false",
+          "topicPatternField" : "TopicA"
+        },
         "link" : "eventLink.ivp"
       },
       "visual" : {
@@ -57,11 +57,11 @@
       "name" : "TopicS",
       "config" : {
         "javaClass" : "com.axonivy.connector.kafka.KafkaStartEventBean",
-        "userConfig" : [
-          "kafkaConfigurationNameField=localhost",
-          "synchronousField=true",
-          "topicPatternField=TopicS"
-        ],
+        "userConfig" : {
+          "kafkaConfigurationNameField" : "localhost",
+          "synchronousField" : "true",
+          "topicPatternField" : "TopicS"
+        },
         "link" : "eventLink2.ivp"
       },
       "visual" : {
@@ -78,11 +78,11 @@
       "name" : "TopicB",
       "config" : {
         "javaClass" : "com.axonivy.connector.kafka.KafkaStartEventBean",
-        "userConfig" : [
-          "kafkaConfigurationNameField=localhost",
-          "synchronousField=false",
-          "topicPatternField=TopicB"
-        ],
+        "userConfig" : {
+          "kafkaConfigurationNameField" : "localhost",
+          "synchronousField" : "false",
+          "topicPatternField" : "TopicB"
+        },
         "link" : "eventLink3.ivp"
       },
       "visual" : {
