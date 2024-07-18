@@ -1,16 +1,17 @@
 # Apache Kafka Connector
 
-[Apache Kafka](https://kafka.apache.org/) is a distributed streaming platform that allows you to publish and subscribe to streams of records. It is designed to handle large volumes of real-time data feeds and can be used for building real-time 
-streaming data pipelines and applications. Kafka is often used for tasks such as data integration, real-time analytics, and log aggregation.
+[Apache Kafka](https://kafka.apache.org/)  is a distributed streaming platform that allows you to publish and subscribe to streams of records. It is designed to handle large volumes of real-time data streams and can be used to implement real-time streaming data pipelines and applications. Kafka is commonly used for use cases such as data integration, real-time analytics, and log aggregation - especially when large amounts of data are involved.
 
-Axon Ivy’s  Apache Kafka connector helps you accelerate process automation initiatives by providing a unified, high-throughput, low-latency platform for handling real-time data feeds. 
+The Apache Kafka Connector from Axon Ivy helps you accelerate your process automation by providing access to the features of Apache Kafka.
 
 This connector:
-- Is based on the [Apache Kafka API](https://kafka.apache.org/34/javadoc/).
-- Gives you access to one or more Apache Kafka message-handling servers or clusters. 
-- Allows you to define multiple, inheriting connection configurations and lets you quickly create a `KafkaConsumer` or a `KafkaProducer`.
-- Provides an `IProcessStartEventBean` which can be used to start Ivy processes that react on Apache Kafka messages synchronously or asynchronously.
-- Supports you with a demo implementation to reduce your integration effort enabling low-code citizen developers to integrate existing 3rd party systems.
+
+- Is based on the [Apache Kafka API](https://kafka.apache.org/34/javadoc/)..
+- Provides you with access to one or more Apache Kafka message-handling servers or clusters.
+- Allows you to define multiple connection configurations.
+- Creates `KafkaConsumer` or `KafkaProducer` instances.
+- Offers an `IProcessStartEventBean` that can be used to start Ivy processes that process Apache Kafka messages synchronously or asynchronously.
+- Supports you with a demo implementation to reduce your integration effort.
 
 ## Demo
 
