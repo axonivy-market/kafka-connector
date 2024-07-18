@@ -2,8 +2,6 @@
 
 [![CI Build](https://github.com/axonivy-market/kafka-connector/actions/workflows/ci.yml/badge.svg)](https://github.com/axonivy-market/kafka-connector/actions/workflows/ci.yml)
 
-Connect to Apache Kafka.
-
 This connector gives you access to one or more Apache Kafka message
 handling servers or clusters. It allows you to define multiple,
 inheriting connection configurations and lets you quickly create
