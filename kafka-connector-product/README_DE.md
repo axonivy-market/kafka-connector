@@ -5,7 +5,7 @@
 Der Apache Kafka Konnektor von Axon Ivy hilft dir, deine Prozessautomatisierung zu beschleunigen, indem er dir Zugriff auf die Feature von Apache Kafka bietet.
 
 Dieser Konnektor:
-- Basiert auf der [Apache Kafka API](https://kafka.apache.org/34/javadoc/)..
+- Basiert auf der [Apache Kafka API](https://kafka.apache.org/34/javadoc/).
 - Gibt dir Zugriff auf einen oder mehrere Apache Kafka Message-Handling-Server oder -Cluster.
 - Ermöglicht es dir, mehrere  Verbindungskonfigurationen zu definieren
 - erstelle `KafkaConsumer` oder `KafkaProducer`
