@@ -6,6 +6,9 @@
   <artifactId>kafka-connector-demo</artifactId>
   <version>11.2.0-SNAPSHOT</version>
   <packaging>iar</packaging>
+  <properties>
+    <project.build.plugin.version>11.3.0</project.build.plugin.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>com.axonivy.connector.kafka</groupId>
@@ -15,7 +18,6 @@
     </dependency>
   </dependencies>
   <pluginRepositories>
-    <!-- Snapshot releases are available via sonatype.org -->
     <pluginRepository>
       <id>sonatype</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -29,7 +31,7 @@
       <plugin>
         <groupId>com.axonivy.ivy.ci</groupId>
         <artifactId>project-build-plugin</artifactId>
-        <version>11.2.0</version>
+        <version>${project.build.plugin.version}</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
