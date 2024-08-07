@@ -3,7 +3,7 @@
   <groupId>com.axonivy.connector.kafka</groupId>
   <name>kafka-connector</name>
   <artifactId>kafka-connector-modules</artifactId>
-  <version>11.2.0-SNAPSHOT</version>
+  <version>11.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
