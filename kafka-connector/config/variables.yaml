@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json-schema.axonivy.com/app/12.0.0/variables.json
 # == Variables ==
 # 
 # You can define here your project Variables.
@@ -13,20 +14,26 @@ Variables:
     pollTimeoutMs: 60000
     # for a list of configuration options see https://kafka.apache.org/documentation/
     default:
-      # class used for key serialization
-      key.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
-      # class used for value serialization
-      value.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
-      # class used for key deserialization
-      key.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
-      # class used for value deserialization
-      value.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
-      # should messages be auto-committed?
-      enable.auto.commit: true
-      # where to start reading if there was not yet any offset found for the client
-      auto.offset.reset: 'earliest'
-      # group id
-      group.id: 'AxonIvy'
-      
+      key:
+        # class used for key serialization
+        serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+        # class used for key deserialization
+        deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+      value:
+        # class used for value serialization
+        serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+        # class used for value deserialization
+        deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+      enable:
+        auto:
+          # should messages be auto-committed?
+          commit: true
+      auto:
+        offset:
+          # where to start reading if there was not yet any offset found for the client
+          reset: 'earliest'
+      group:
+        # group id
+        id: 'AxonIvy'
 
-      
+

@@ -1,0 +1,27 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/data-class/12.0.0/data-class.json",
+  "simpleName" : "DemoGuiData",
+  "namespace" : "com.axonivy.connector.kafka.demo.DemoGui",
+  "isBusinessCaseData" : false,
+  "fields" : [ {
+    "name" : "key",
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "value",
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "topic",
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "configurationName",
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "configuration",
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
+  } ]
+}
