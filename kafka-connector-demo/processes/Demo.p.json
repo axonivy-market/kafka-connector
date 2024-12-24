@@ -128,8 +128,7 @@
         "output" : {
           "code" : [
             "import ch.ivyteam.ivy.process.model.value.SignalCode;",
-            "",
-            "ivy.wf.signals().send(new SignalCode(\"TopicS\"), in.consumerRecord.value());",
+            "ivy.wf.signals().create().data(in.consumerRecord.value()).makeCurrentTaskPersistent().send(SignalCode.of(\"signalCode\"));",
             "",
             "// After successful handling, message can be committed. I the message is not",
             "// committed, it will be retransferred after the next restart of the client.",
