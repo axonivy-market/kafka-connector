@@ -1,4 +1,0 @@
-DemoData #class
-com.axonivy.connector.kafka.demo #namespace
-consumer org.apache.kafka.clients.consumer.Consumer #field
-consumerRecord org.apache.kafka.clients.consumer.ConsumerRecord #field
