@@ -46,7 +46,7 @@ and web-based tools. Please note the licence conditions.
 
 If you do not have access to an existing Apache Kafka, you may quickly start one
 in a docker container. You may want to use the provided docker compose file
-[docker-compose.yml](files/docker-compose.yml) as a starter.
+[docker-compose.yml](https://github.com/axonivy-market/kafka-connector/blob/release/10.0/kafka-connector-product/files/docker-compose.yml) as a starter.
 
 Copy this file to your machine and `cd` to the directory containing this file.
 Enter there the command
