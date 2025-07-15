@@ -7,7 +7,7 @@
 # '<project>/Config/_<environment>/variables.yaml
 #
 Variables:
-  kafka-connector:
+  kafkaConnector:
     # Number of worker threads shared by all consumers to handle Kafka messages in parallel.
     workerPoolSize: 10
     # Consumer polling time in ms. Note, that messages are always received immediately. This is only the blocking timeout of the poll function.

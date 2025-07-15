@@ -16,11 +16,11 @@ public class KafkaConnectorConfigurationTest {
 
 	@Test
 	public void testInheritence(AppFixture fixture){
-		fixture.var("kafka-connector.workerPoolSize", "10");
-		fixture.var("kafka-connector.default.setting.a", "A1");
-		fixture.var("kafka-connector.default.setting.b", "B1");
-		fixture.var("kafka-connector.my.inherit", "default");
-		fixture.var("kafka-connector.my.setting.a", "A2");
+		fixture.var("kafkaConnector.workerPoolSize", "10");
+		fixture.var("kafkaConnector.default.setting.a", "A1");
+		fixture.var("kafkaConnector.default.setting.b", "B1");
+		fixture.var("kafkaConnector.my.inherit", "default");
+		fixture.var("kafkaConnector.my.setting.a", "A2");
 
 		Properties defaultProps = KafkaService.get().getConfigurationProperties("default");
 

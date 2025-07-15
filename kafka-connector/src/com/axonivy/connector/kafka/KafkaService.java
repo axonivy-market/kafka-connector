@@ -25,7 +25,7 @@ public class KafkaService {
 	private static final String POLL_TIMEOUT_MS = "pollTimeoutMs";
 	private static final String TOPIC_CONSUMER_SUPPLIER = "topicConsumerSupplier";
 	private static KafkaService INSTANCE = new KafkaService();
-	private static final String KAFKA_GLOBAL_VARIABLE = "kafka-connector";
+	private static final String KAFKA_GLOBAL_VARIABLE = "kafkaConnector";
 
 	private KafkaService() {
 	}
