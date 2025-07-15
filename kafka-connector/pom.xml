@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.axonivy.connector.kafka</groupId>
   <artifactId>kafka-connector</artifactId>
-  <version>12.0.2-SNAPSHOT</version>
+  <version>13.1.1-SNAPSHOT</version>
   <packaging>iar</packaging>
   <properties>
     <project.build.plugin.version>12.0.0</project.build.plugin.version>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
-      <version>3.9.0</version>
+      <version>4.0.0</version>
     </dependency>
     <dependency>
       <groupId>com.axonivy.ivy.api</groupId>

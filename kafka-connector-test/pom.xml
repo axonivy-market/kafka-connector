@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.axonivy.connector.kafka</groupId>
   <artifactId>kafka-connector-test</artifactId>
-  <version>12.0.2-SNAPSHOT</version>
+  <version>13.1.1-SNAPSHOT</version>
   <packaging>iar</packaging>
   <properties>
     <tester.version>12.0.1</tester.version>
