@@ -161,9 +161,10 @@ and passed to the constructor of the Kafka consumer or producer objects.
 
 The special setting `inherit` can be used to reference another configuration block that can be used and
 overridden by a block. (Inheritence is recursive and will check for invalid loops.) The connector defines
-a `default` block with some common settings. It usually makes sense to inherit your configuration from 
-this block. For an example of a simple configuration which inherits from the `default` configuration,
+a `defaultOptions` block with some common settings. It usually makes sense to inherit your configuration from 
+this block. For an example of a simple configuration which inherits from the `defaultOptions` configuration,
 have a look at the demo project!
 
 > [!NOTE]
 > The variable path `kafka-connector` is renamed to `kafkaConnector` from 13.
+> The variable path `kafka-connector.default` is renamed to `kafkaConnector.defaultOptions` from 13.
