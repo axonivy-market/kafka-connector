@@ -1,39 +1,37 @@
-# yaml-language-server: $schema=https://json-schema.axonivy.com/app/12.0.0/variables.json
+# yaml-language-server: $schema=https://json-schema.axonivy.com/app/13.1.0/variables.json
 # == Variables ==
-# 
+#
 # You can define here your project Variables.
 # If you want to define/override a Variable for a specific Environment, 
 # add an additional ‘variables.yaml’ file in a subdirectory in the ‘Config’ folder: 
 # '<project>/Config/_<environment>/variables.yaml
 #
 Variables:
-  kafka-connector:
+  kafkaConnector:
     # Number of worker threads shared by all consumers to handle Kafka messages in parallel.
-    workerPoolSize: 10
+    workerPoolSize: "10"
     # Consumer polling time in ms. Note, that messages are always received immediately. This is only the blocking timeout of the poll function.
-    pollTimeoutMs: 60000
+    pollTimeoutMs: "60000"
     # for a list of configuration options see https://kafka.apache.org/documentation/
-    default:
+    defaultOptions:
       key:
         # class used for key serialization
-        serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+        serializer: org.apache.kafka.common.serialization.StringSerializer
         # class used for key deserialization
-        deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+        deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value:
         # class used for value serialization
-        serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+        serializer: org.apache.kafka.common.serialization.StringSerializer
         # class used for value deserialization
-        deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
+        deserializer: org.apache.kafka.common.serialization.StringDeserializer
       enable:
         auto:
           # should messages be auto-committed?
-          commit: true
+          commit: "true"
       auto:
         offset:
           # where to start reading if there was not yet any offset found for the client
-          reset: 'earliest'
+          reset: earliest
       group:
         # group id
-        id: 'AxonIvy'
-
-
+        id: AxonIvy

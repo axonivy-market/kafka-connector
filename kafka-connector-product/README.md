@@ -143,7 +143,7 @@ Additionally you might implement and configure your own consumer supplier for yo
 ### Configuration
 
 Configuration can be done in global variables where some simple inheritence mechanism
-is provided. All Kafka configuration is stored below the `kafka-connector` global
+is provided. All Kafka configuration is stored below the `kafkaConnector` global
 variable. At this level you should configure the following global settings.
 
 **workerPoolSize** Number of worker threads shared by all consumers to handle Kafka messages in parallel.
@@ -153,7 +153,7 @@ variable. At this level you should configure the following global settings.
 #### Property blocks and inheritence
 
 Other than that, the configuration contains property blocks below configuration names. For example, the
-settings contained in the block `kafka-connector.localhost` will be used, when a prodcuer is created with
+settings contained in the block `kafkaConnector.localhost` will be used, when a prodcuer is created with
 `KafkaService.get().createProducer("localhost")`.
 
 All settings (except the setting `inherit`) below this this name will be collected into a `Properties` object
@@ -161,6 +161,10 @@ and passed to the constructor of the Kafka consumer or producer objects.
 
 The special setting `inherit` can be used to reference another configuration block that can be used and
 overridden by a block. (Inheritence is recursive and will check for invalid loops.) The connector defines
-a `default` block with some common settings. It usually makes sense to inherit your configuration from 
-this block. For an example of a simple configuration which inherits from the `default` configuration,
+a `defaultOptions` block with some common settings. It usually makes sense to inherit your configuration from 
+this block. For an example of a simple configuration which inherits from the `defaultOptions` configuration,
 have a look at the demo project!
+
+> [!NOTE]
+> The variable path `kafka-connector` is renamed to `kafkaConnector` from 13.
+> The variable path `kafka-connector.default` is renamed to `kafkaConnector.defaultOptions` from 13.
