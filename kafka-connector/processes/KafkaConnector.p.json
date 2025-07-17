@@ -8,7 +8,7 @@
   "elements" : [ {
       "id" : "f0",
       "type" : "CallSubStart",
-      "name" : "send(String,String,Object,Object)",
+      "name" : "send(String,String,Object,Object,Callback)",
       "config" : {
         "signature" : "send",
         "input" : {
@@ -16,13 +16,23 @@
             { "name" : "configurationName", "type" : "String", "desc" : "" },
             { "name" : "topic", "type" : "String", "desc" : "" },
             { "name" : "key", "type" : "Object", "desc" : "" },
-            { "name" : "value", "type" : "Object", "desc" : "" }
+            { "name" : "value", "type" : "Object", "desc" : "" },
+            { "name" : "callback", "type" : "org.apache.kafka.clients.producer.Callback", "desc" : "can be null, if not used" }
           ],
           "map" : {
+            "out.callback" : "param.#callback",
             "out.configurationName" : "param.configurationName",
             "out.key" : "param.key",
             "out.topic" : "param.topic",
             "out.value" : "param.value"
+          }
+        },
+        "result" : {
+          "params" : [
+            { "name" : "futureMetadata", "type" : "java.util.concurrent.Future<org.apache.kafka.clients.producer.RecordMetadata>", "desc" : "" }
+          ],
+          "map" : {
+            "result.futureMetadata" : "in.futureMetadata"
           }
         }
       },
@@ -31,6 +41,7 @@
       ],
       "visual" : {
         "at" : { "x" : 96, "y" : 64 },
+        "labelOffset" : { "x" : 49, "y" : 57 },
         "icon" : "res:/webContent/icons/logo.png?small"
       },
       "connect" : [
@@ -54,7 +65,7 @@
             "import org.apache.kafka.clients.producer.KafkaProducer;",
             "",
             "KafkaProducer producer = KafkaService.get().createProducer(in.configurationName);",
-            "producer.send(new ProducerRecord(in.topic, in.key, in.value));"
+            "in.futureMetadata = producer.send(new ProducerRecord(in.topic, in.key, in.value), in.#callback);"
           ]
         }
       },

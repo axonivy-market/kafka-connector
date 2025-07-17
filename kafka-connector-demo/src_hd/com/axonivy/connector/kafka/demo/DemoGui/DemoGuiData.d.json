@@ -23,5 +23,13 @@
     "name" : "configuration",
     "type" : "String",
     "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "simpleCallback",
+    "type" : "com.axonivy.connector.kafka.demo.SimpleDemoCallback",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "ivyCallback",
+    "type" : "com.axonivy.connector.kafka.demo.IvyDemoCallback",
+    "modifiers" : [ "PERSISTENT" ]
   } ]
 }

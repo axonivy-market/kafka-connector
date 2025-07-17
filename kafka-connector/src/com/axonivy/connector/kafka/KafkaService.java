@@ -2,6 +2,7 @@ package com.axonivy.connector.kafka;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
@@ -10,12 +11,16 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.utils.Utils;
 
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.environment.Ivy;
+import ch.ivyteam.ivy.restricted.IvyThreadLocalNameConstants;
 import ch.ivyteam.ivy.vars.Variable;
+import ch.ivyteam.util.threadcontext.IvyThreadContext;
 
 /**
  * Functions to support working with Apache Kafka.
@@ -230,5 +235,55 @@ public class KafkaService {
 
 		properties.putAll(inheritedProperties);
 		properties.putAll(newProperties);
+	}
+
+	/**
+	 * Create a callback for use within most parts of the Ivy environment.
+	 * 
+	 * <p>
+	 * Note, that some Ivy objects might not be valid in the callback (e.g. request and response).
+	 * <h2>Examples</h2>
+	 * </p>
+	 * 
+	 * <code>
+	 * <pre>
+	 * producer.send(record, ivyCallback(new MyIvyCallback());
+	 * </pre>
+	 * </code>
+	 * or
+	 * <code>
+	 * <pre>
+	 * producer.send(record, ivyCallback((metadata, exception) -> Ivy.wf().signals().send("kafka:demo:signal")));
+	 * </pre>
+	 * </code>
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	public IvyCallback ivyCallback(Callback callback) {
+		return new IvyCallback(callback);
+	}
+
+	private class IvyCallback implements Callback {
+		private Object memento;
+		private Callback callback;
+
+		protected IvyCallback(Callback callback) {
+			// Save most of the Ivy context but not the servlet request. It will be invalid and every access will throw an
+			// IllegalStateException, e.g. Ivy.log() which adds data from the servlet request to the log context.
+			this.memento = IvyThreadContext.saveToMemento(List.of(IvyThreadLocalNameConstants.SERVLET_REQUEST));
+			this.callback = callback;
+		}
+
+		@Override
+		public void onCompletion(RecordMetadata metadata, Exception exception) {
+			try {
+				IvyThreadContext.restoreFromMemento(memento);
+				callback.onCompletion(metadata, exception);
+			}
+			finally {
+				IvyThreadContext.remove();
+			}
+		}
 	}
 }

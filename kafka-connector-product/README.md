@@ -67,7 +67,22 @@ The connector was built to give you as much access as possible to the original
 [Apache Kafka API](https://kafka.apache.org/34/javadoc/) while providing some
 useful semantics for use in Axon Ivy.
 
-### KafkaStartEventBean
+### Sending
+
+As defined by the Kafka API, send results can be accessed either through a `Future`
+or a `Callback` supplied by the caller. This connector supports both options and will
+use the `callback` if it is not `null`.
+
+Note, that callbacks run in a `Thread` created by Kafka and will not have access to
+Ivy functionality. A convenience function KafkaService.ivyCallback() is provided to
+create callbacks which can use most of Ivy functions. An exception will be Ivy functionality
+which is related to the current request (as this request is not valid outside of the request thread).
+
+If you want to use callbacks with Ivy functionality it is best to use as little Ivy as possible
+and for example just send the returned send data with a signal to a normal Ivy signal handler.
+The convenience function currently uses a non-public Ivy API. 
+
+### Receiving
 
 An `KafkaStartEventBean` for use in an Ivy *Program start* element is provided to listen
 to topics and start Ivy processes. Select this bean in the *Start* tab of a *Program start*

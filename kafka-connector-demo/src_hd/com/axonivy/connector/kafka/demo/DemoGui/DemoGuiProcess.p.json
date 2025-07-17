@@ -77,6 +77,8 @@
       "config" : {
         "output" : {
           "code" : [
+            "import com.axonivy.connector.kafka.demo.IvyDemoCallback;",
+            "import com.axonivy.connector.kafka.demo.SimpleDemoCallback;",
             "import com.axonivy.connector.kafka.KafkaService;",
             "import com.axonivy.connector.kafka.demo.DemoService;",
             "",
@@ -86,8 +88,10 @@
             "in.key = \"my key\";",
             "in.value = \"my value\";",
             "",
-            "// just for display in GUI",
-            "in.configuration = KafkaService.get().getPropertiesString(KafkaService.get().getConfigurationProperties(in.configurationName));"
+            "// In dataclass for display in GUI",
+            "in.configuration = KafkaService.get().getPropertiesString(KafkaService.get().getConfigurationProperties(in.configurationName));",
+            "in.simpleCallback = new SimpleDemoCallback();",
+            "in.ivyCallback = new IvyDemoCallback();"
           ]
         }
       },
@@ -114,7 +118,7 @@
       "type" : "SubProcessCall",
       "name" : "Send TopicA",
       "config" : {
-        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "processCall" : "KafkaConnector:send(String,String,Object,Object,org.apache.kafka.clients.producer.Callback)",
         "call" : {
           "map" : {
             "param.configurationName" : "in.configurationName",
@@ -122,6 +126,14 @@
             "param.key" : "in.key",
             "param.value" : "in.value"
           }
+        },
+        "output" : {
+          "code" : [
+            "import org.apache.kafka.clients.producer.RecordMetadata;",
+            "// Wait for return.",
+            "RecordMetadata md = result.futureMetadata.get() as RecordMetadata;",
+            "ivy.log.info(\"Metadata: offset: {0}\", md.offset());"
+          ]
         }
       },
       "visual" : {
@@ -136,13 +148,14 @@
       "type" : "SubProcessCall",
       "name" : "Send TopicB",
       "config" : {
-        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "processCall" : "KafkaConnector:send(String,String,Object,Object,org.apache.kafka.clients.producer.Callback)",
         "call" : {
           "map" : {
             "param.configurationName" : "in.configurationName",
             "param.topic" : "\"TopicB\"",
             "param.key" : "in.key",
-            "param.value" : "in.value"
+            "param.value" : "in.value",
+            "param.callback" : "in.simpleCallback"
           }
         }
       },
@@ -158,13 +171,14 @@
       "type" : "SubProcessCall",
       "name" : "Send TopicS",
       "config" : {
-        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "processCall" : "KafkaConnector:send(String,String,Object,Object,org.apache.kafka.clients.producer.Callback)",
         "call" : {
           "map" : {
             "param.configurationName" : "in.configurationName",
             "param.topic" : "\"TopicS\"",
             "param.key" : "in.key",
-            "param.value" : "in.value"
+            "param.value" : "in.value",
+            "param.callback" : "com.axonivy.connector.kafka.KafkaService.get().ivyCallback(in.ivyCallback)"
           }
         }
       },
@@ -175,5 +189,26 @@
       "connect" : [
         { "id" : "f19", "to" : "f3" }
       ]
+    }, {
+      "id" : "f20",
+      "type" : "ProcessAnnotation",
+      "name" : "Use with a callback (without Ivy functionality).",
+      "visual" : {
+        "at" : { "x" : 544, "y" : 256 }
+      }
+    }, {
+      "id" : "f21",
+      "type" : "ProcessAnnotation",
+      "name" : "Typical use with a Future.",
+      "visual" : {
+        "at" : { "x" : 544, "y" : 160 }
+      }
+    }, {
+      "id" : "f22",
+      "type" : "ProcessAnnotation",
+      "name" : "Use with a callback with Ivy functionality.",
+      "visual" : {
+        "at" : { "x" : 544, "y" : 352 }
+      }
     } ]
 }

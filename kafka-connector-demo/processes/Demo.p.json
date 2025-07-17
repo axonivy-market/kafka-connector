@@ -19,7 +19,7 @@
         "demo"
       ],
       "visual" : {
-        "at" : { "x" : 96, "y" : 64 }
+        "at" : { "x" : 96, "y" : 80 }
       },
       "connect" : [
         { "id" : "f21", "to" : "f19" }
@@ -28,7 +28,7 @@
       "id" : "f1",
       "type" : "TaskEnd",
       "visual" : {
-        "at" : { "x" : 416, "y" : 64 }
+        "at" : { "x" : 416, "y" : 80 }
       }
     }, {
       "id" : "f5",
@@ -44,7 +44,7 @@
         "link" : "eventLink.ivp"
       },
       "visual" : {
-        "at" : { "x" : 96, "y" : 192 },
+        "at" : { "x" : 96, "y" : 336 },
         "labelOffset" : { "x" : 13, "y" : 33 },
         "icon" : "res:/webContent/icons/logo.png?small"
       },
@@ -65,7 +65,7 @@
         "link" : "eventLink2.ivp"
       },
       "visual" : {
-        "at" : { "x" : 96, "y" : 432 },
+        "at" : { "x" : 96, "y" : 560 },
         "labelOffset" : { "x" : 13, "y" : 33 },
         "icon" : "res:/webContent/icons/logo.png?small"
       },
@@ -86,7 +86,7 @@
         "link" : "eventLink3.ivp"
       },
       "visual" : {
-        "at" : { "x" : 96, "y" : 272 },
+        "at" : { "x" : 96, "y" : 416 },
         "labelOffset" : { "x" : 13, "y" : 33 },
         "icon" : "res:/webContent/icons/logo.png?small"
       },
@@ -109,7 +109,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 240, "y" : 240 }
+        "at" : { "x" : 240, "y" : 384 }
       },
       "connect" : [
         { "id" : "f12", "to" : "f11" }
@@ -118,7 +118,7 @@
       "id" : "f11",
       "type" : "TaskEnd",
       "visual" : {
-        "at" : { "x" : 416, "y" : 240 }
+        "at" : { "x" : 416, "y" : 384 }
       }
     }, {
       "id" : "f13",
@@ -138,7 +138,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 240, "y" : 432 }
+        "at" : { "x" : 240, "y" : 560 }
       },
       "connect" : [
         { "id" : "f16", "to" : "f15" }
@@ -147,7 +147,7 @@
       "id" : "f15",
       "type" : "TaskEnd",
       "visual" : {
-        "at" : { "x" : 416, "y" : 432 }
+        "at" : { "x" : 416, "y" : 560 }
       }
     }, {
       "id" : "f17",
@@ -157,7 +157,7 @@
         "Message processing will end (but not block receiving new messages for the topic) at a process end element or at a task switch element."
       ],
       "visual" : {
-        "at" : { "x" : 648, "y" : 240 },
+        "at" : { "x" : 648, "y" : 384 },
         "size" : { "width" : 376, "height" : 80 }
       }
     }, {
@@ -168,7 +168,7 @@
         "Message processing will end (and the next message of the topic can be received) at a process end element or at a task switch element."
       ],
       "visual" : {
-        "at" : { "x" : 646, "y" : 425 },
+        "at" : { "x" : 646, "y" : 553 },
         "size" : { "width" : 369, "height" : 116 }
       }
     }, {
@@ -179,10 +179,79 @@
         "dialog" : "com.axonivy.connector.kafka.demo.DemoGui:start()"
       },
       "visual" : {
-        "at" : { "x" : 240, "y" : 64 }
+        "at" : { "x" : 240, "y" : 80 }
       },
       "connect" : [
         { "id" : "f2", "to" : "f1" }
       ]
-    } ]
+    }, {
+      "id" : "f3",
+      "type" : "SignalStartEvent",
+      "name" : "kafka:connector:demo:signal",
+      "config" : {
+        "signalCode" : "kafka:connector:demo:signal",
+        "output" : {
+          "map" : {
+            "out.signalData" : "signal.getSignalData() as String"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 192 },
+        "labelOffset" : { "x" : 41, "y" : 49 }
+      },
+      "connect" : [
+        { "id" : "f20", "to" : "f4" }
+      ]
+    }, {
+      "id" : "f4",
+      "type" : "Script",
+      "name" : "Log",
+      "config" : {
+        "output" : {
+          "code" : "ivy.log.info(\"Received signal for finished sending: {0}\", in.signalData);"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 240, "y" : 192 }
+      },
+      "connect" : [
+        { "id" : "f23", "to" : "f22" }
+      ]
+    }, {
+      "id" : "f22",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 416, "y" : 192 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
+    }, {
+      "id" : "f24",
+      "type" : "ProcessAnnotation",
+      "name" : "Signal handler for signals sent by the send callback of Topic S. Whenever a message was sent to TopicS, this signal will be called.",
+      "visual" : {
+        "at" : { "x" : 649, "y" : 201 },
+        "size" : { "width" : 366, "height" : 78 }
+      }
+    } ],
+  "layout" : {
+    "lanes" : [ {
+        "name" : "Demo",
+        "offset" : 32,
+        "size" : 624,
+        "lanes" : [ {
+            "name" : "Sending",
+            "size" : 240,
+            "color" : "Sending"
+          }, {
+            "name" : "Receiving",
+            "size" : 384,
+            "color" : "Receiving"
+          } ]
+      } ],
+    "colors" : {
+      "Sending" : "#ccffde",
+      "Receiving" : "#ffe7a3"
+    }
+  }
 }
