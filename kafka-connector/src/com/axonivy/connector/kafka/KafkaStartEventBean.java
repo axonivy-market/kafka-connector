@@ -68,7 +68,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 						topicConsumerSupplierClass, topicConsumerSupplier.getClass().getCanonicalName());
 			}
 		}
-		reader.start(configurationName, topicConsumerSupplier, isSynchronous(), Duration.ofMillis(KafkaService.get().getPollTimeoutMs()));
+		reader.start(configurationName, topicConsumerSupplier, isSynchronous());
 		super.start(monitor);
 		log().info("Started KafkaStartEventBean.");
 	}
@@ -108,14 +108,12 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		private String configurationName;
 		private KafkaConsumerSupplier<?, ?> consumerSupplier;
 		private boolean synchronous;
-		private Duration pollTimeout;
 		private KafkaConsumer<?, ?> consumer;
 
-		public synchronized void start(String configurationName, KafkaConsumerSupplier<?, ?> consumerSupplier, boolean synchronous, Duration pollTimeout) {
+		public synchronized void start(String configurationName, KafkaConsumerSupplier<?, ?> consumerSupplier, boolean synchronous) {
 			this.configurationName = configurationName;
 			this.consumerSupplier = consumerSupplier;
 			this.synchronous = synchronous;
-			this.pollTimeout = pollTimeout;
 		}
 
 		public void stop() {
@@ -149,7 +147,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 
 						lastConfiguration = configuration;
 					}
-					pollTimeout = Duration.ofMillis(KafkaService.get().getPollTimeoutMs());
+					var pollTimeout = Duration.ofMillis(KafkaService.get().getPollTimeoutMs());
 					ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
 					for (ConsumerRecord<?, ?> record : records) {
 						log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
