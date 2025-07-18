@@ -77,10 +77,10 @@
       "config" : {
         "output" : {
           "code" : [
+            "import com.axonivy.connector.kafka.KafkaConfiguration;",
             "import com.axonivy.connector.kafka.demo.IvyDemoCallback;",
             "import com.axonivy.connector.kafka.demo.SimpleDemoCallback;",
             "import com.axonivy.connector.kafka.KafkaService;",
-            "import com.axonivy.connector.kafka.demo.DemoService;",
             "",
             "KafkaService kafkaService = KafkaService.get();",
             "",
@@ -89,7 +89,7 @@
             "in.value = \"my value\";",
             "",
             "// In dataclass for display in GUI",
-            "in.configuration = KafkaService.get().getPropertiesString(KafkaService.get().getConfigurationProperties(in.configurationName));",
+            "in.configuration = \"\" + KafkaConfiguration.get(in.configurationName);",
             "in.simpleCallback = new SimpleDemoCallback();",
             "in.ivyCallback = new IvyDemoCallback();"
           ]

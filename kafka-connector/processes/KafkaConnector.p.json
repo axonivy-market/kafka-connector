@@ -64,7 +64,7 @@
             "import com.axonivy.connector.kafka.KafkaService;",
             "import org.apache.kafka.clients.producer.KafkaProducer;",
             "",
-            "KafkaProducer producer = KafkaService.get().createProducer(in.configurationName);",
+            "KafkaProducer producer = KafkaService.get().producer(in.configurationName);",
             "in.futureMetadata = producer.send(new ProducerRecord(in.topic, in.key, in.value), in.#callback);"
           ]
         }
@@ -75,5 +75,27 @@
       "connect" : [
         { "id" : "f2", "to" : "f1" }
       ]
+    }, {
+      "id" : "f5",
+      "type" : "ProgramStart",
+      "name" : "Kafka Cleanup",
+      "config" : {
+        "javaClass" : "com.axonivy.connector.kafka.KafkaCleanupStartEventBean",
+        "link" : "eventLink.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 240 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      },
+      "connect" : [
+        { "id" : "f7", "to" : "f6" }
+      ]
+    }, {
+      "id" : "f6",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 288, "y" : 240 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
     } ]
 }

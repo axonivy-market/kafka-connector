@@ -16,10 +16,6 @@
     "type" : "String",
     "modifiers" : [ "PERSISTENT" ]
   }, {
-    "name" : "configurationName",
-    "type" : "String",
-    "modifiers" : [ "PERSISTENT" ]
-  }, {
     "name" : "configuration",
     "type" : "String",
     "modifiers" : [ "PERSISTENT" ]
@@ -30,6 +26,10 @@
   }, {
     "name" : "ivyCallback",
     "type" : "com.axonivy.connector.kafka.demo.IvyDemoCallback",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "configurationName",
+    "type" : "String",
     "modifiers" : [ "PERSISTENT" ]
   } ]
 }

@@ -1,13 +1,9 @@
 package com.axonivy.connector.kafka;
 
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -16,10 +12,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.utils.Utils;
 
-import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.ivy.restricted.IvyThreadLocalNameConstants;
-import ch.ivyteam.ivy.vars.Variable;
 import ch.ivyteam.util.threadcontext.IvyThreadContext;
 
 /**
@@ -30,13 +24,8 @@ public class KafkaService {
 	private static final String POLL_TIMEOUT_MS = "pollTimeoutMs";
 	private static final String TOPIC_CONSUMER_SUPPLIER = "topicConsumerSupplier";
 	private static KafkaService INSTANCE = new KafkaService();
-	private static final String KAFKA_GLOBAL_VARIABLE = "kafka-connector";
 
 	private KafkaService() {
-	}
-
-	public String getKafkaGlobalVariableName() {
-		return KAFKA_GLOBAL_VARIABLE;
 	}
 
 	/**
@@ -56,20 +45,38 @@ public class KafkaService {
 	 * @param properties
 	 * @return
 	 */
-	public <K, V> KafkaProducer<K, V> createProducer(Properties properties) {
+	public <K, V> KafkaProducer<K, V> producer(Properties properties) {
 		return executeWithKafkaClassLoader(() -> new KafkaProducer<>(properties));
 	}
 
 	/**
-	 * Create a {@link KafkaProducer} configured by configuration name.
+	 * Get a {@link KafkaProducer} configured by configuration name.
+	 * 
+	 * Re-uses cached producer if available.
 	 * 
 	 * @param <K>
 	 * @param <V>
 	 * @param configurationName
 	 * @return
 	 */
-	public <K, V> KafkaProducer<K, V> createProducer(String configurationName) {
-		return createProducer(getConfigurationProperties(configurationName));
+	@SuppressWarnings("unchecked")
+	public <K, V> KafkaProducer<K, V> producer(String configurationName) {
+		var cached = KafkaConfiguration.get(configurationName);
+		if(!cached.isProducerValid()) {
+			synchronized(this) {
+				if(!cached.isProducerValid()) {
+					if(cached.getProducer() != null) {
+						Ivy.log().info("Closing existing {0} for configuration ''{1}''", KafkaProducer.class.getSimpleName(), configurationName);
+						cached.getProducer().close();
+						cached.setProducer(null);
+					}
+					Ivy.log().info("Creating a new {0} for configuration ''{1}''", KafkaProducer.class.getSimpleName(), configurationName);
+					cached.setProducer(producer(cached.getProperties()));
+					cached.setProducerValid(true);
+				}
+			}
+		}
+		return (KafkaProducer<K, V>) cached.getProducer();
 	}
 
 	/**
@@ -80,22 +87,48 @@ public class KafkaService {
 	 * @param properties
 	 * @return
 	 */
-	public <K, V> KafkaConsumer<K, V> createConsumer(Properties properties) {
+	public <K, V> KafkaConsumer<K, V> consumer(Properties properties) {
 		return executeWithKafkaClassLoader(() -> new KafkaConsumer<>(properties));
 	}
 
 	/**
 	 * Create a {@link KafkaConsumer} configured by configuration name.
 	 * 
+	 * Consumers are not thread-safe, so always create a new consumer.
+	 * 
 	 * @param <K>
 	 * @param <V>
 	 * @param configurationName
 	 * @return
 	 */
-	public <K, V> KafkaConsumer<K, V> createConsumer(String configurationName) {
-		return createConsumer(getConfigurationProperties(configurationName));
+	@SuppressWarnings("unchecked")
+	public <K, V> KafkaConsumer<K, V> consumer(String configurationName) {
+		return consumer(KafkaConfiguration.get(configurationName).getProperties());
 	}
 
+	/**
+	 * Close a producer.
+	 * 
+	 * @param configurationName
+	 */
+	public synchronized void closeProducer(String configurationName) {
+		var cached = KafkaConfiguration.get(configurationName);
+		if(cached.isProducerValid()) {
+			cached.getProducer().close();
+			cached.setProducer(null);
+			cached.setProducerValid(false);
+		}
+	}
+
+	public void closeAllProducers() {
+		for (var configurationName : KafkaConfiguration.getConfigurations().keySet()) {
+			try {
+				closeProducer(configurationName);
+			} catch (Exception e) {
+				Ivy.log().error("Exception closing producer {0}", configurationName);
+			}
+		}
+	}
 
 	/**
 	 * Execute a function with a different {@link ClassLoader}.
@@ -136,7 +169,7 @@ public class KafkaService {
 	 */
 	public int getWorkerPoolSize() {
 		int defaultValue = 10;
-		return getVar(WORKER_POOL_SIZE, v -> StringUtils.isNotBlank(v) ? Integer.valueOf(v) : defaultValue, defaultValue);
+		return getKafkaVar(WORKER_POOL_SIZE, v -> StringUtils.isNotBlank(v) ? Integer.valueOf(v) : defaultValue, defaultValue);
 	}
 
 	/**
@@ -146,7 +179,7 @@ public class KafkaService {
 	 */
 	public long getPollTimeoutMs() {
 		long defaultValue = 60000L;
-		return getVar(POLL_TIMEOUT_MS, v -> StringUtils.isNotBlank(v) ? Long.valueOf(v) : defaultValue, defaultValue);
+		return getKafkaVar(POLL_TIMEOUT_MS, v -> StringUtils.isNotBlank(v) ? Long.valueOf(v) : defaultValue, defaultValue);
 	}
 
 	/**
@@ -155,40 +188,12 @@ public class KafkaService {
 	 * @return
 	 */
 	public String getTopicConsumerSupplier() {
-		return getVar(TOPIC_CONSUMER_SUPPLIER, v -> ( StringUtils.isNotBlank(v) ? v.trim() : null), (String)null);
+		return getKafkaVar(TOPIC_CONSUMER_SUPPLIER, v -> ( StringUtils.isNotBlank(v) ? v.trim() : null), (String)null);
 	}
 
-	/**
-	 * Return the configuration properties of a specific Kafka configuration stored in global variables.
-	 * 
-	 * @param configurationName
-	 * @return
-	 */
-	public Properties getConfigurationProperties(String configurationName) {
-		Properties properties = new Properties();
-		Set<String> seen = new HashSet<>();
-
-		mergeProperties(configurationName, seen, properties);
-
-		return properties;
-	}
-
-	/**
-	 * Convert {@link Properties} to {@link String}.
-	 * 
-	 * @param properties
-	 * @return
-	 */
-	public String getPropertiesString(Properties properties) {
-		return properties.entrySet().stream()
-				.sorted(Comparator.comparing(e -> e.getKey().toString()))
-				.map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
-				.collect(Collectors.joining("\n"));
-	}
-
-	protected <T> T getVar(String varName, Function<String, T> converter, T defaultValue) {
+	protected <T> T getKafkaVar(String varName, Function<String, T> converter, T defaultValue) {
 		T returnValue = defaultValue;
-		String value = Ivy.var().get(varName);
+		var value = Ivy.var().get("%s.%s".formatted(KafkaConfiguration.getKafkaGlobalVariable(), varName));
 		try {
 			returnValue = converter.apply(value);
 		}
@@ -200,42 +205,6 @@ public class KafkaService {
 		return returnValue;
 	}
 
-	/**
-	 * Read properties from global variables.
-	 * 
-	 * If a configuration contains a value for inherited,
-	 * then the inherited configuration will be read first.
-	 * 
-	 * @param configurationName
-	 * @param seen
-	 * @param properties
-	 */
-	protected void mergeProperties(String configurationName, Set<String> seen, Properties properties) {
-		if(!seen.add(configurationName)) {
-			throw BpmError.create("kafka:connector:configloop").withMessage("Found configuration loop with already seen configuration '" + configurationName + "'.").build();
-		}
-		String whichAbs = KAFKA_GLOBAL_VARIABLE + "." + configurationName + ".";
-
-		Properties inheritedProperties = new Properties();
-		Properties newProperties = new Properties();
-
-		for (Variable v : Ivy.var().all()) {
-			String name = v.name();
-			if(name.startsWith(whichAbs)) {
-				name = name.substring(whichAbs.length());
-				String value = v.value();
-				if(name.equals("inherit")) {
-					mergeProperties(value, seen, inheritedProperties);
-				}
-				else {
-					newProperties.put(name, value);
-				}
-			}
-		}
-
-		properties.putAll(inheritedProperties);
-		properties.putAll(newProperties);
-	}
 
 	/**
 	 * Create a callback for use within most parts of the Ivy environment.
@@ -268,6 +237,7 @@ public class KafkaService {
 		private Object memento;
 		private Callback callback;
 
+		@SuppressWarnings("restriction")
 		protected IvyCallback(Callback callback) {
 			// Save most of the Ivy context but not the servlet request. It will be invalid and every access will throw an
 			// IllegalStateException, e.g. Ivy.log() which adds data from the servlet request to the log context.

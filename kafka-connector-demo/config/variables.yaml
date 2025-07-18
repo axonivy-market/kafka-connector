@@ -7,10 +7,10 @@
 # '<project>/Config/_<environment>/variables.yaml
 #
 Variables:
-  kafka-connector:
+  kafkaConnector:
     localhost:
       # inherit from a configuration with this name
-      inherit: 'default'
+      inherit: 'defaultConfig'
       bootstrap:
         # list of bootstrap servers
         servers: 'localhost:9092'
