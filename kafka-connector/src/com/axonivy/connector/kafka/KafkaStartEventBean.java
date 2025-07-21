@@ -126,7 +126,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 			try {
 				log().debug("Handle Kafka messages synchronously: {0}", synchronous);
 
-				var lastConfiguration = KafkaConfiguration.get(configurationName);
+				var lastConfigId = KafkaConfiguration.get(configurationName).getConfigId();
 
 				consumer = consumerSupplier.supply(configurationName);
 				consumer.subscribe(Pattern.compile(getTopicPattern()));
@@ -136,16 +136,16 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 				while(!Thread.currentThread().isInterrupted()) {
 					log().debug("Polling ''{0}:{1}''", configurationName, getTopicPattern());
 					var configuration = KafkaConfiguration.get(configurationName);
-					log().info("last config: {0} current: {1}", System.identityHashCode(lastConfiguration), System.identityHashCode(configuration));
-					if(!configuration.hasSameConfigId(lastConfiguration)) {
-						log().info("Configuration change detected for consumer {0}:{1}", configurationName, getTopicPattern());
+					var configId = configuration.getConfigId();
+					if(!configuration.hasConfigId(lastConfigId)) {
+						log().info("Configuration change detected for consumer {0}:{1}, config Id changed from ''{2}'' to ''{3}''", configurationName, getTopicPattern(), lastConfigId, configId);
 						consumer.close();
 						log().info("Closed consumer {0}:{1}", configurationName, getTopicPattern());
 						consumer = consumerSupplier.supply(configurationName);
 						consumer.subscribe(Pattern.compile(getTopicPattern()));
 						log().info("Created a new consumer {0}:{1}", configurationName, getTopicPattern());
 
-						lastConfiguration = configuration;
+						lastConfigId = configId;
 					}
 					var pollTimeout = Duration.ofMillis(KafkaService.get().getPollTimeoutMs());
 					ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
