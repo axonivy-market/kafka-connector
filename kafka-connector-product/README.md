@@ -34,7 +34,7 @@ Type `kafka-console-consumer --help` for usage.
 ### KafkaStartEventBean
 
 The demo also contains examples of using a `KafkaStartEventBean`. Whenever
-you send a message from the Demo GUI, it will be received by one of the
+    you send a message from the Demo GUI, it will be received by one of the 
 Demo listeners (which log them into the Runtime log).
 
 ### Other tools
@@ -48,7 +48,7 @@ and web-based tools. Please note the licence conditions.
 
 If you do not have access to an existing Apache Kafka, you may quickly start one
 in a docker container. You may want to use the provided docker compose file
-[docker-compose.yml](https://github.com/axonivy-market/kafka-connector/blob/master/kafka-connector-product/files/docker-compose.yml) as a starter.
+[docker-compose.yml](https://github.com/axonivy-market/kafkaConnector/blob/master/kafkaConnector-product/files/docker-compose.yml) as a starter.
 
 Copy this file to your machine and `cd` to the directory containing this file.
 Enter there the command
@@ -158,17 +158,19 @@ Additionally you might implement and configure your own consumer supplier for yo
 ### Configuration
 
 Configuration can be done in global variables where some simple inheritence mechanism
-is provided. All Kafka configuration is stored below the `kafka-connector` global
+is provided. All Kafka configuration is stored below the `kafkaConnector` global
 variable. At this level you should configure the following global settings.
 
 **workerPoolSize** Number of worker threads shared by all consumers to handle Kafka messages in parallel.
 
-**pollTimeoutMs** Consumer polling time in ms. Note, that messages are always received immediately. This is only the blocking timeout of the poll function.
+**pollTimeoutMs** Consumer polling time in ms. Note, that messages are always received immediately.
+This timeout value defines the poll interval. Also it will be the maximum time needed to automatically
+detect configuration changes (change of `configId`).
 
 #### Property blocks and inheritence
 
 Other than that, the configuration contains property blocks below configuration names. For example, the
-settings contained in the block `kafka-connector.localhost` will be used, when a prodcuer is created with
+settings contained in the block `kafkaConnector.localhost` will be used, when a prodcuer is created with
 `KafkaService.get().createProducer("localhost")`.
 
 All settings (except the setting `inherit`) below this this name will be collected into a `Properties` object
@@ -176,6 +178,14 @@ and passed to the constructor of the Kafka consumer or producer objects.
 
 The special setting `inherit` can be used to reference another configuration block that can be used and
 overridden by a block. (Inheritence is recursive and will check for invalid loops.) The connector defines
-a `default` block with some common settings. It usually makes sense to inherit your configuration from 
-this block. For an example of a simple configuration which inherits from the `default` configuration,
+a `defaultConfig` block with some common settings. It usually makes sense to inherit your configuration from 
+this block. For an example of a simple configuration which inherits from the `defaultConfig` configuration,
 have a look at the demo project!
+
+The special setting `configId` is used to detect changes in the configuration. The actual value put there
+does not matter, it can be a simple number or even a timestamp. Whenever the value changes, all producers
+and consumers affected by the change will be re-created automatically to reflect the new configuration. Producers
+will react at the next send, consumers will react when a new message is received (by the old configuration) or
+automatically, whenever a new poll occurs (which is defined by `pollTimeoutMs`). Note, that the `configId` can
+be inheritted, so changing it for a single configuration will only update producers and consumers for this
+specific configuration while updating the `defaultConfig` will update all producers and consumers.
