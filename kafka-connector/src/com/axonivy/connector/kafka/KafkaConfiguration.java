@@ -1,22 +1,23 @@
 package com.axonivy.connector.kafka;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 
+import ch.ivyteam.ivy.application.IApplication;
 import ch.ivyteam.ivy.bpm.error.BpmError;
+import ch.ivyteam.ivy.data.cache.IDataCache;
 import ch.ivyteam.ivy.environment.Ivy;
 
 public class KafkaConfiguration {
 	private static final String KAFKA_GLOBAL_VARIABLE = "kafkaConnector";
 	private static final String CONFIG_ID_VARIABLE = "configId";
-	private static final Map<String, KafkaConfiguration> configurations = new HashMap<>();
+	private static final String CONFIG_CACHE_GROUP = "Kafka Configuration";
 
 	private String name;
 	private Properties properties;
@@ -36,16 +37,16 @@ public class KafkaConfiguration {
 	public static KafkaConfiguration get(String configurationName) {
 		var properties = getConfigurationProperties(configurationName);
 
-		var cached = configurations.get(configurationName);
+		var cached = getCachedConfiguration(configurationName);
 
 		if(cached == null || !isEqual(cached.getConfigId(), properties.get(CONFIG_ID_VARIABLE))) {
 			synchronized (KafkaConfiguration.class) {
-				cached = configurations.get(configurationName);
+				cached = getCachedConfiguration(configurationName);
 				if(cached == null || !isEqual(cached.getProperties().get(CONFIG_ID_VARIABLE), properties.get(CONFIG_ID_VARIABLE))) {
 					Ivy.log().info("Creating or updating configuration ''{0}''", configurationName);
 					if(cached == null) {
 						cached = new KafkaConfiguration();
-						configurations.put(configurationName, cached);
+						setCachedConfiguration(configurationName, cached);
 					}
 					cached.setName(configurationName);
 					cached.setProperties(properties);
@@ -54,6 +55,26 @@ public class KafkaConfiguration {
 			}
 		}
 		return cached;
+	}
+
+
+	public static KafkaConfiguration getCachedConfiguration(String configurationName) {
+		var entry = cache().getEntry(CONFIG_CACHE_GROUP, configurationName);
+		return entry != null ? (KafkaConfiguration) entry.getValue() : null;
+	}
+
+
+	public static void setCachedConfiguration(String configurationName, KafkaConfiguration configuration) {
+		cache().setEntry(CONFIG_CACHE_GROUP, configurationName, configuration);
+	}
+
+	protected static IDataCache cache() {
+		return IDataCache.of(IApplication.current());
+	}
+
+	public static List<String> getAllCachedConfigurations() {
+		var group = cache().getGroup(CONFIG_CACHE_GROUP);
+		return group.getEntries().stream().map(e -> e.getIdentifier()).toList();
 	}
 
 	/**
@@ -170,9 +191,6 @@ public class KafkaConfiguration {
 	}
 	public void setProducer(KafkaProducer<?, ?> producer) {
 		this.producer = producer;
-	}
-	public static Map<String, KafkaConfiguration> getConfigurations() {
-		return configurations;
 	}
 
 	/**

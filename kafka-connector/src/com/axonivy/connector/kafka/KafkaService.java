@@ -46,6 +46,7 @@ public class KafkaService {
 	 * @return
 	 */
 	public <K, V> KafkaProducer<K, V> producer(Properties properties) {
+		Ivy.log().debug("Creating producer with properties: {0}", properties);
 		return executeWithKafkaClassLoader(() -> new KafkaProducer<>(properties));
 	}
 
@@ -88,6 +89,7 @@ public class KafkaService {
 	 * @return
 	 */
 	public <K, V> KafkaConsumer<K, V> consumer(Properties properties) {
+		Ivy.log().debug("Creating consumer with properties: {0}", properties);
 		return executeWithKafkaClassLoader(() -> new KafkaConsumer<>(properties));
 	}
 
@@ -121,7 +123,7 @@ public class KafkaService {
 	}
 
 	public void closeAllProducers() {
-		for (var configurationName : KafkaConfiguration.getConfigurations().keySet()) {
+		for (var configurationName : KafkaConfiguration.getAllCachedConfigurations()) {
 			try {
 				closeProducer(configurationName);
 			} catch (Exception e) {
