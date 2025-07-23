@@ -111,68 +111,72 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		private KafkaConsumer<?, ?> consumer;
 
 		public synchronized void start(String configurationName, KafkaConsumerSupplier<?, ?> consumerSupplier, boolean synchronous) {
+			log().info("KafkaReader start");
 			this.configurationName = configurationName;
 			this.consumerSupplier = consumerSupplier;
 			this.synchronous = synchronous;
 		}
 
 		public void stop() {
+			log().info("KafkaReader stop");
 			if(consumer != null) {
 				consumer.wakeup();
 			}
 		}
 
 		private void run() {
-			try {
-				log().debug("Handle Kafka messages synchronously: {0}", synchronous);
-
-				var lastConfigId = KafkaConfiguration.get(configurationName).getConfigId();
-
-				consumer = consumerSupplier.supply(configurationName);
-				consumer.subscribe(Pattern.compile(getTopicPattern()));
-
-				log().debug("Got consumer {0} which subscribed to Kafka topic pattern: {1}", consumer, getTopicPattern());
-
-				while(!Thread.currentThread().isInterrupted()) {
-					log().debug("Polling ''{0}:{1}''", configurationName, getTopicPattern());
-					var configuration = KafkaConfiguration.get(configurationName);
-					var configId = configuration.getConfigId();
-					if(!configuration.hasConfigId(lastConfigId)) {
-						log().info("Configuration change detected for consumer {0}:{1}, config Id changed from ''{2}'' to ''{3}''", configurationName, getTopicPattern(), lastConfigId, configId);
-						consumer.close();
-						log().info("Closed consumer {0}:{1}", configurationName, getTopicPattern());
-						consumer = consumerSupplier.supply(configurationName);
-						consumer.subscribe(Pattern.compile(getTopicPattern()));
-						log().info("Created a new consumer {0}:{1}", configurationName, getTopicPattern());
-
-						lastConfigId = configId;
-					}
-					var pollTimeout = Duration.ofMillis(KafkaService.get().getPollTimeoutMs());
-					ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
-					for (ConsumerRecord<?, ?> record : records) {
-						log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
-								record.topic(), record.offset(), record.key(), record.value(), record);
-
-						startProcess(record, synchronous);
-					}
-					consumeAsyncRequests();
-				}
-			}
-			catch (WakeupException | InterruptException e) {
-				log().info("Consumer was woken up. This is ok, when there is a shutdown.");
-			}
-			catch(Exception e) {
-				log().error("Exception while listening for topic, closing consumer.", e);
-				throw new RuntimeException("Exception while listening for topic.", e);
-			}
-			finally {
-				log().info("Closing consumer for configuration ''{0}:{1}''", configurationName, getTopicPattern());
+			while(!Thread.currentThread().isInterrupted()) {
 				try {
-					consumer.close();
-				} catch (InterruptException e) {
-					log().info("Ignoring exception while closing consumer for configuration ''{0}:{1}'' ({2})", configurationName, getTopicPattern(), e);
+					log().info("Creating consumer for configuration ''{0}'' topic ''{1}'' to handle Kafka messages synchronously: {2}", configurationName, getTopicPattern(), synchronous);
+
+					var lastConfigId = KafkaConfiguration.get(configurationName).getConfigId();
+
+					consumer = consumerSupplier.supply(configurationName);
+					consumer.subscribe(Pattern.compile(getTopicPattern()));
+
+					log().debug("Consumer {0} subscribed to Kafka topic pattern: {1}", consumer, getTopicPattern());
+
+					while(!Thread.currentThread().isInterrupted()) {
+						log().debug("Polling ''{0}:{1}''", configurationName, getTopicPattern());
+						var configuration = KafkaConfiguration.get(configurationName);
+						var configId = configuration.getConfigId();
+						if(!configuration.hasConfigId(lastConfigId)) {
+							log().info("Configuration change detected for consumer {0}:{1}, config Id changed from ''{2}'' to ''{3}''", configurationName, getTopicPattern(), lastConfigId, configId);
+							consumer.close();
+							log().info("Closed consumer {0}:{1}", configurationName, getTopicPattern());
+							consumer = consumerSupplier.supply(configurationName);
+							consumer.subscribe(Pattern.compile(getTopicPattern()));
+							log().info("Created a new consumer {0}:{1}", configurationName, getTopicPattern());
+
+							lastConfigId = configId;
+						}
+						var pollTimeout = Duration.ofMillis(KafkaService.get().getPollTimeoutMs());
+						ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
+						for (ConsumerRecord<?, ?> record : records) {
+							log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
+									record.topic(), record.offset(), record.key(), record.value(), record);
+
+							startProcess(record, synchronous);
+						}
+						consumeAsyncRequests();
+					}
 				}
-				consumer = null;
+				catch (WakeupException | InterruptException e) {
+					log().info("Consumer was woken up. This is ok, when there is a shutdown. Consumer: {0}", consumer);
+				}
+				catch(Exception e) {
+					log().error("Exception while listening for topic, closing consumer {0}.", e, consumer);
+					throw new RuntimeException("Exception while listening for topic.", e);
+				}
+				finally {
+					log().info("Closing consumer {0}", consumer);
+					try {
+						consumer.close();
+					} catch (InterruptException e) {
+						log().info("Ignoring exception while closing consumer for configuration ''{0}:{1}'' ({2})", configurationName, getTopicPattern(), e);
+					}
+					consumer = null;
+				}
 			}
 		}
 
