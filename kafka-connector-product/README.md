@@ -19,6 +19,10 @@ The demo provides a dialog with buttons for sending messages to different
 Apache Kafka *topics*. You may enter a *key* and a *value* but it is ok,
 to use the same key and value for multiple messages.
 
+*PersonTopic* is a special topic which sends and receives *Person* objects,
+with a schema coming from a schema-registry. Note, that this demo requires
+access to a schema-registry.
+
 To see the effect of sending messages you have multiple options:
 
 ### Apache Kafka command line
@@ -57,9 +61,8 @@ Enter there the command
 docker-compose up -d
 ```
 
-and docker will start a `zookeeper` server on port 2181  and a `kafka` server on port 9092. To
-connect to this server, use `localhost:9092` as your bootstrap server. Note, that the demo
-is configured to connect to this server.
+and docker will start a `zookeeper` server on port 2181, a `kafka` server on port 9092 and an (optional) `schema-registry` on port 9081. To
+connect to this server, use `localhost:9092` as your bootstrap server. Note, that the demo is configured to connect to this server.
 
 ## Usage
 
@@ -132,6 +135,24 @@ If you configured a special Kafka Deserializer you will have to cast the
 received objects manually to the correct type.
 The type of the `consumerRecord` field must be `org.apache.kafka.clients.consumer.ConsumerRecord`.
 
+#### Using the schema registry
+
+The demo shows a basic example of using the schema registry to send and receive structured messages
+(*SchemaTopic*). To work with schemas, create a schema (e.g. `person.avsc`) and let Maven create
+the POJO class for that schema. The `pom.xml` file of the demo project shows an example of
+running the source generation. Source is generated when you start the build in the `generate-avro`
+profile:
+
+```
+mvn generate-sources -Pgenerate-avro
+```
+
+If your schema registry is set-up to automatically accept a new schema, you can directly
+send a POJO to your Kafka topic. Direct receiving of POJOS is currently not supported by
+this connector (because of missing visibility of project classes in the consumer classloader).
+Objects can still be received though by setting `specific.avro.reader: false`. The consumer
+will return GenericData records which can be examined or copied manually into POJOs if needed.
+See the `SchemaTopic` workflow for an example.
 
 #### Giving back control after handling a message
 

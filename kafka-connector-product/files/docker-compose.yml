@@ -19,27 +19,19 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT'
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
   schema-registry:
     image: 'confluentinc/cp-schema-registry:7.9.2'
     container_name: 'schema-registry'
     hostname: 'schema-registry'
     ports:
-      - "8091:8081"
+      - "9081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:29092
     depends_on:
       - kafka
-  ivy12-kafka:
-    restart: no
-    image: 'axonivy/axonivy-engine:12.0'
-    container_name: ivy12-kafka
-    hostname: ivy12-kafka
-    ports:
-      - '8080:8080'
-  

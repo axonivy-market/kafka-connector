@@ -31,5 +31,9 @@
     "name" : "configurationName",
     "type" : "String",
     "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "person",
+    "type" : "com.axonivy.connector.kafka.demo.Person",
+    "modifiers" : [ "PERSISTENT" ]
   } ]
 }

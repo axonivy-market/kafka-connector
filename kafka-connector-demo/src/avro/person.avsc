@@ -1,0 +1,11 @@
+{
+  "namespace": "com.axonivy.connector.kafka.demo",
+  "type": "record",
+  "name": "Person",
+  "fields": [
+  	{"name": "id", "type": "long"},
+    {"name": "firstname", "type": "string"},
+    {"name": "lastname", "type": "string"},
+    {"name": "dob", "type": {"type": "int", "logicalType": "date"}}
+  ]
+}

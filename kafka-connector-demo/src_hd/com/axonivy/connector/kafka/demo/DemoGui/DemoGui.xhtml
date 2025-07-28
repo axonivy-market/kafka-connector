@@ -9,96 +9,110 @@
 	<ui:composition template="/layouts/frame-10.xhtml">
 		<ui:define name="title">Apache Kafka Demo Gui</ui:define>
 		<ui:define name="content">
-
-			<p>
-		This demo allows you to quickly send simple key/value messages to an Apache Kafka server.
-		Note, that this demo uses the following configuration:
-			</p>
-			
-			<pre>#{data.configuration}</pre>
-			
-			<dl>
-			<dt>TopicA</dt>
-			<dd>
-			Messages are sent to TopicA. The send call returns a Future which will be used to wait for finishing of the send.
-			Additionally a StartEventBean in the Demo process was configured to listen for messages on TopicA. It will fire
-			when the message was received and redistributed by Kafka. Check the notes in the Demo process for additional information
-			about the StartEventBeans.
-			</dd>
-			<dt>TopicB</dt>
-			<dd>
-			Messages are sent to TopicB. A simple callback is passed to the send call and just remembers the last offset returned
-			by Kafka. The last offset is shown below the send button. It will be refreshed on every send or when you press the
-			Refresh button.
-			Additionally a StartEventBean in the Demo process was configured to listen for messages on TopicB. It will fire
-			when the message was received and redistributed by Kafka. Check the notes in the Demo process for additional information
-			about the StartEventBeans.
-			</dd>
-			<dt>TopicB</dt>
-			<dd>
-			Messages are sent to TopicS. An Ivy callback is passed to the send call and sends a signal whenever the send call
-			is finished. Note, that using Ivy in a callback is restricted since the current request will not be available.
-			Also Callbacks with Ivy functionality need to be created with KafkaService.ivyCallback() function.
-			Additionally a StartEventBean in the Demo process was configured to listen for messages on TopicS. It will fire
-			when the message was received and redistributed by Kafka. Check the notes in the Demo process for additional information
-			about the StartEventBeans.
-			</dd>
-			</dl>
-			
-			
-
 			<h:form id="form">
 				<div class="ui-fluid">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12">
+							This demo
+							allows you to quickly send simple key/value messages to an Apache
+							Kafka server. Note, that this demo uses the following
+							configuration:
+						</div>
+					</div>
+					<div class="ui-g">
+						<div class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12">
+							<pre>#{data.configuration}</pre>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
+							<p:outputLabel for="@next" value="Key" />
+							<p:inputText value="#{data.key}" />
+						</div>
+						<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
+							<p:outputLabel for="@next" value="Value" />
+							<p:inputText value="#{data.value}" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-2 ui-lg-2 ui-md-4 ui-sm-6">
+							<p:commandButton value="TopicA" icon="pi pi-send"
+									actionListener="#{logic.sendTopicA}" update="@form" />
+						</div>
+						<div class="ui-g-10 ui-lg-10 ui-md-8 ui-sm-6">
+							Messages are sent to TopicA. The send call returns a
+							Future which will be used to wait for finishing of the send.
+							Additionally a StartEventBean in the Demo process was configured
+							to listen for messages on TopicA. It will fire when the message
+							was received and redistributed by Kafka. Check the notes in the
+							Demo process for additional information about the
+							StartEventBeans.
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-2 ui-lg-2 ui-md-4 ui-sm-6">
+							<p:commandButton value="TopicB" icon="pi pi-send"
+									actionListener="#{logic.sendTopicB}" update="@form" />
+							Offset: <p:outputLabel value="#{data.simpleCallback.lastOffset}" />
+						</div>
+						<div class="ui-g-10 ui-lg-10 ui-md-8 ui-sm-6">
+							Messages are sent to TopicB. A simple callback is passed
+							to the send call and just remembers the last offset returned by
+							Kafka. The last offset is shown below the send button. It will be
+							refreshed on every send or when you press the Refresh button.
+							Additionally a StartEventBean in the Demo process was configured
+							to listen for messages on TopicB. It will fire when the message
+							was received and redistributed by Kafka. Check the notes in the
+							Demo process for additional information about the
+							StartEventBeans.
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-2 ui-lg-2 ui-md-4 ui-sm-6">
+							<p:commandButton value="TopicS" icon="pi pi-send"
+									actionListener="#{logic.sendTopicS}" update="@form" />
+						</div>
+						<div class="ui-g-10 ui-lg-10 ui-md-8 ui-sm-6">
+							Messages are sent to TopicS. An Ivy callback is passed to
+							the send call and sends a signal whenever the send call is
+							finished. Note, that using Ivy in a callback is restricted since
+							the current request will not be available. Also Callbacks with
+							Ivy functionality need to be created with
+							KafkaService.ivyCallback() function. Additionally a
+							StartEventBean in the Demo process was configured to listen for
+							messages on TopicS. It will fire when the message was received
+							and redistributed by Kafka. Check the notes in the Demo process
+							for additional information about the StartEventBeans.
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-2 ui-lg-2 ui-md-4 ui-sm-6">
+							<p:commandButton value="PersonTopic" icon="pi pi-send"
+									actionListener="#{logic.sendPersonTopic}" update="@form" />
+							Last Received: <p:outputLabel value="#{data.person.id}" />
+						</div>
+						<div class="ui-g-10 ui-lg-10 ui-md-8 ui-sm-6">
+							Person objects are sent to PersonTopicS and received
+							directly by a temporary consumer. This demo makes use of a schema
+							registry and is therefore kept simple to avoid start exceptions
+							in case you do not have access to a schema registry.
+						</div>
+					</div>
+
 
 					<p:spacer />
 
-					<p:fieldset id="demo" legend="Kafka Message Sender">
-						<div class="ui-g">
-							<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-								<p:commandButton value="TopicA" icon="pi pi-send"
-									actionListener="#{logic.sendTopicA}" update="contentPanel" />
-							</div>
-							<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-								<p:commandButton value="TopicB" icon="pi pi-send"
-									actionListener="#{logic.sendTopicB}" update="contentPanel" />
-							</div>
-							<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-								<p:commandButton value="TopicS" icon="pi pi-send"
-									actionListener="#{logic.sendTopicS}" update="contentPanel" />
-							</div>
-							<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-							</div>
-							<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-								<p:commandButton value="Refresh" icon="pi pi-send"
-									update="contentPanel" />
-							</div>
-						</div>
-						<p:outputPanel id="contentPanel">
 							<div class="ui-g">
 								<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-								</div>
-								<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-									<small><p:outputLabel value="TopicB Last Offset: #{data.simpleCallback.lastOffset}" /></small>
-								</div>
-							</div>
-							<div class="ui-g">
-								<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-									<p:outputLabel for="@next" value="Key" />
-								</div>
-								<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-									<p:inputText value="#{data.key}" />
+									<p:commandButton value="Refresh" icon="pi pi-send"
+										update="@form" />
 								</div>
 							</div>
-							<div class="ui-g">
-								<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-									<p:outputLabel for="@next" value="Value" />
-								</div>
-								<div class="ui-g-2 ui-lg-2 ui-md-6 ui-sm-12">
-									<p:inputText value="#{data.value}" />
-								</div>
-							</div>
-						</p:outputPanel>
-					</p:fieldset>
 				</div>
 				<br />
 				<div class="command-btns">

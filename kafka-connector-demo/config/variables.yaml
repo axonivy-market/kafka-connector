@@ -14,3 +14,23 @@ Variables:
       bootstrap:
         # list of bootstrap servers
         servers: 'localhost:9092'
+    localhostSchematic:
+      # inherit from a configuration with this name
+      inherit: 'localhost'
+      key:
+        # class used for key serialization
+        serializer: 'io.confluent.kafka.serializers.KafkaAvroSerializer'
+        # class used for key deserialization
+        deserializer: 'io.confluent.kafka.serializers.KafkaAvroDeserializer'
+      value:
+        # class used for value serialization
+        serializer: 'io.confluent.kafka.serializers.KafkaAvroSerializer'
+        # class used for value deserialization
+        deserializer: 'io.confluent.kafka.serializers.KafkaAvroDeserializer'
+      specific:
+        avro:
+          # deserializing to POJO does not work, if the class is not in the classpath of the connector project
+          reader: false
+      schema:
+        registry:
+          url: 'http://localhost:9081'
