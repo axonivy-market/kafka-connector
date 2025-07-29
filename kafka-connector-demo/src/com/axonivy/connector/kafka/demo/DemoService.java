@@ -47,11 +47,26 @@ public class DemoService {
 				Ivy.log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
 						r.topic(), r.offset(), r.key(), r.value(), r);
 
-				var val = (Record)r.value();
 				/*
-				 * Currently there is no simple way to deserialize into a POJO since the classloader
-				 * will not see objects from us. Therefore deserialization is done here.
+				 * Read the object as a GenericData.Record instead of automatic deserialisiation
+				 * into a Person object. Reason is, that deserialisation into a Person object would
+				 * require most of the time some classloader hacking.
+				 * 
+				 * To use automatic de-serialisation, set specific.avro.reader: true and make sure,
+				 * that the needed objects can be loaded by producer.send() and consumer.poll().
+				 * 
+				 * This will likely require to set a thread context classloader before send() and poll(). 
+				 * Note, that classloader results are cached in a static map and will be used for
+				 * sending and receiving. Make sure, that the thread context classloader is set
+				 * before the first send() or poll().
+				 * 
+				 * Thread.currentThread().setContextClassLoader(MyObject.class.getClassLoader());
+				 * 
+				 * Note: Consuming objects with a StartEventBean currently requires to inherit and
+				 * implement your own version to set the thread context classloader before the first
+				 * poll!
 				 */
+				var val = (Record)r.value();
 				person = Person.newBuilder()
 						.setId((long)val.get("id"))
 						.setFirstname((CharSequence) val.get("firstname"))
