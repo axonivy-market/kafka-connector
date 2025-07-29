@@ -61,7 +61,7 @@ Enter there the command
 docker-compose up -d
 ```
 
-and docker will start a `zookeeper` server on port 2181, a `kafka` server on port 9092 and an (optional) `schema-registry` on port 9081. To
+and docker will start a `zookeeper` server on port `2181`, a `kafka` server on port 9092 and an (optional) `schema-registry` on port `9081`. To
 connect to this server, use `localhost:9092` as your bootstrap server. Note, that the demo is configured to connect to this server.
 
 ## Usage
