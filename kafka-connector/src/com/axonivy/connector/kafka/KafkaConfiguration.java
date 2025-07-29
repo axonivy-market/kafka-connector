@@ -74,7 +74,7 @@ public class KafkaConfiguration {
 
 	public static List<String> getAllCachedConfigurations() {
 		var group = cache().getGroup(CONFIG_CACHE_GROUP);
-		return group.getEntries().stream().map(e -> e.getIdentifier()).toList();
+		return group == null ? List.of() : group.getEntries().stream().map(e -> e.getIdentifier()).toList();
 	}
 
 	/**
