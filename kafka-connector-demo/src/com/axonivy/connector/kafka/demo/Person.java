@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 2822128791859429965L;
+  private static final long serialVersionUID = 4514821908623383189L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.axonivy.connector.kafka.demo\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"firstname\",\"type\":\"string\"},{\"name\":\"lastname\",\"type\":\"string\"},{\"name\":\"dob\",\"type\":{\"type\":\"int\",\"logicalType\":\"date\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.axonivy.connector.kafka.demo\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"firstname\",\"type\":\"string\"},{\"name\":\"lastname\",\"type\":\"string\"},{\"name\":\"dob\",\"type\":{\"type\":\"int\",\"logicalType\":\"date\"}},{\"name\":\"addresses\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Address\",\"fields\":[{\"name\":\"street\",\"type\":\"string\"},{\"name\":\"city\",\"type\":\"string\"},{\"name\":\"zipCode\",\"type\":\"string\"},{\"name\":\"country\",\"type\":\"string\"}]}},\"default\":[]}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -80,6 +80,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   private java.lang.CharSequence firstname;
   private java.lang.CharSequence lastname;
   private java.time.LocalDate dob;
+  private java.util.List<com.axonivy.connector.kafka.demo.Address> addresses;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -94,12 +95,14 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * @param firstname The new value for firstname
    * @param lastname The new value for lastname
    * @param dob The new value for dob
+   * @param addresses The new value for addresses
    */
-  public Person(java.lang.Long id, java.lang.CharSequence firstname, java.lang.CharSequence lastname, java.time.LocalDate dob) {
+  public Person(java.lang.Long id, java.lang.CharSequence firstname, java.lang.CharSequence lastname, java.time.LocalDate dob, java.util.List<com.axonivy.connector.kafka.demo.Address> addresses) {
     this.id = id;
     this.firstname = firstname;
     this.lastname = lastname;
     this.dob = dob;
+    this.addresses = addresses;
   }
 
   @Override
@@ -116,6 +119,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     case 1: return firstname;
     case 2: return lastname;
     case 3: return dob;
+    case 4: return addresses;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -126,6 +130,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       null,
       null,
       new org.apache.avro.data.TimeConversions.DateConversion(),
+      null,
       null
   };
 
@@ -143,6 +148,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     case 1: firstname = (java.lang.CharSequence)value$; break;
     case 2: lastname = (java.lang.CharSequence)value$; break;
     case 3: dob = (java.time.LocalDate)value$; break;
+    case 4: addresses = (java.util.List<com.axonivy.connector.kafka.demo.Address>)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -216,6 +222,23 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   }
 
   /**
+   * Gets the value of the 'addresses' field.
+   * @return The value of the 'addresses' field.
+   */
+  public java.util.List<com.axonivy.connector.kafka.demo.Address> getAddresses() {
+    return addresses;
+  }
+
+
+  /**
+   * Sets the value of the 'addresses' field.
+   * @param value the value to set.
+   */
+  public void setAddresses(java.util.List<com.axonivy.connector.kafka.demo.Address> value) {
+    this.addresses = value;
+  }
+
+  /**
    * Creates a new Person RecordBuilder.
    * @return A new Person RecordBuilder
    */
@@ -260,6 +283,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     private java.lang.CharSequence firstname;
     private java.lang.CharSequence lastname;
     private java.time.LocalDate dob;
+    private java.util.List<com.axonivy.connector.kafka.demo.Address> addresses;
 
     /** Creates a new Builder */
     private Builder() {
@@ -288,6 +312,10 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
         this.dob = data().deepCopy(fields()[3].schema(), other.dob);
         fieldSetFlags()[3] = other.fieldSetFlags()[3];
       }
+      if (isValidValue(fields()[4], other.addresses)) {
+        this.addresses = data().deepCopy(fields()[4].schema(), other.addresses);
+        fieldSetFlags()[4] = other.fieldSetFlags()[4];
+      }
     }
 
     /**
@@ -311,6 +339,10 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       if (isValidValue(fields()[3], other.dob)) {
         this.dob = data().deepCopy(fields()[3].schema(), other.dob);
         fieldSetFlags()[3] = true;
+      }
+      if (isValidValue(fields()[4], other.addresses)) {
+        this.addresses = data().deepCopy(fields()[4].schema(), other.addresses);
+        fieldSetFlags()[4] = true;
       }
     }
 
@@ -472,6 +504,46 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       return this;
     }
 
+    /**
+      * Gets the value of the 'addresses' field.
+      * @return The value.
+      */
+    public java.util.List<com.axonivy.connector.kafka.demo.Address> getAddresses() {
+      return addresses;
+    }
+
+
+    /**
+      * Sets the value of the 'addresses' field.
+      * @param value The value of 'addresses'.
+      * @return This builder.
+      */
+    public com.axonivy.connector.kafka.demo.Person.Builder setAddresses(java.util.List<com.axonivy.connector.kafka.demo.Address> value) {
+      validate(fields()[4], value);
+      this.addresses = value;
+      fieldSetFlags()[4] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'addresses' field has been set.
+      * @return True if the 'addresses' field has been set, false otherwise.
+      */
+    public boolean hasAddresses() {
+      return fieldSetFlags()[4];
+    }
+
+
+    /**
+      * Clears the value of the 'addresses' field.
+      * @return This builder.
+      */
+    public com.axonivy.connector.kafka.demo.Person.Builder clearAddresses() {
+      addresses = null;
+      fieldSetFlags()[4] = false;
+      return this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public Person build() {
@@ -481,6 +553,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
         record.firstname = fieldSetFlags()[1] ? this.firstname : (java.lang.CharSequence) defaultValue(fields()[1]);
         record.lastname = fieldSetFlags()[2] ? this.lastname : (java.lang.CharSequence) defaultValue(fields()[2]);
         record.dob = fieldSetFlags()[3] ? this.dob : (java.time.LocalDate) defaultValue(fields()[3]);
+        record.addresses = fieldSetFlags()[4] ? this.addresses : (java.util.List<com.axonivy.connector.kafka.demo.Address>) defaultValue(fields()[4]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;

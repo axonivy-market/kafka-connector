@@ -2,9 +2,15 @@ package com.axonivy.connector.kafka.demo;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import org.apache.avro.LogicalTypes;
+import org.apache.avro.data.TimeConversions;
+import org.apache.avro.data.TimeConversions.DateConversion;
+import org.apache.avro.generic.GenericData.Array;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +22,9 @@ import ch.ivyteam.ivy.environment.Ivy;
 
 public class DemoService {
 	private static final DemoService INSTANCE = new DemoService();
+	private static final DateConversion DATE_CONVERSION = new TimeConversions.DateConversion();
 	private static final Random RND = new Random();
+	private static final List<String> countries = List.of("AT", "DE", "CH");
 	private static long personId;
 
 	public static DemoService get() {
@@ -24,11 +32,33 @@ public class DemoService {
 	}
 
 	public Person createRandomPerson() {
-		return new Person(
-				++personId,
-				StringUtils.capitalize(RandomStringUtils.randomAlphabetic(5, 10).toLowerCase()),
-				StringUtils.capitalize(RandomStringUtils.randomAlphabetic(5, 15).toLowerCase()),
-				LocalDate.now().minusDays(365 * (10 + RND.nextInt(90))));
+		var person = Person.newBuilder()
+				.setId(++personId)
+				.setFirstname(randomCapitalized(5, 10))
+				.setLastname(randomCapitalized(5, 15))
+				.setDob(LocalDate.now().minusDays(365 * (10 + RND.nextInt(90))))
+				.setAddresses(new ArrayList<>())
+				.build();
+
+		var count = RND.nextInt(1, 4);
+
+		while(count-- > 0) {
+			person.getAddresses().add(createRandomAddress());
+		}
+		return person;
+	}
+
+	public Address createRandomAddress() {
+		return Address.newBuilder()
+				.setCountry(countries.get(RND.nextInt(countries.size())))
+				.setZipCode("%d".formatted(1000 + RND.nextInt(9000)))
+				.setStreet("%s %d".formatted(randomCapitalized(5, 10), RND.nextInt(1, 200)))
+				.setCity(randomCapitalized(5, 10))
+				.build();
+	}
+
+	public String randomCapitalized(int min, int max) {
+		return StringUtils.capitalize(RandomStringUtils.randomAlphabetic(min, max+1).toLowerCase());
 	}
 
 	/**
@@ -66,13 +96,29 @@ public class DemoService {
 				 * implement your own version to set the thread context classloader before the first
 				 * poll!
 				 */
-				var val = (Record)r.value();
+				var persRec = (Record)r.value();
+
 				person = Person.newBuilder()
-						.setId((long)val.get("id"))
-						.setFirstname((CharSequence) val.get("firstname"))
-						.setLastname((CharSequence) val.get("lastname"))
-						.setDob(LocalDate.EPOCH.plusDays((int) val.get("dob")))
+						.setId((long)persRec.get("id"))
+						.setFirstname((CharSequence) persRec.get("firstname"))
+						.setLastname((CharSequence) persRec.get("lastname"))
+						.setDob(DATE_CONVERSION.fromInt((int) persRec.get("dob"), Person.SCHEMA$, LogicalTypes.date()))
+						.setAddresses(new ArrayList<>())
 						.build();
+
+				@SuppressWarnings("unchecked")
+				var adrsRec = (Array<Record>)persRec.get("addresses");
+
+				for (var adrRec : adrsRec) {
+					person.getAddresses().add(
+							Address.newBuilder()
+							.setStreet((CharSequence) adrRec.get("street"))
+							.setZipCode((CharSequence) adrRec.get("zipCode"))
+							.setCity((CharSequence) adrRec.get("city"))
+							.setCountry((CharSequence) adrRec.get("country"))
+							.build()
+							);
+				}
 			}
 		}
 		catch (Exception e) {
