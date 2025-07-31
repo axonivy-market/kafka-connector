@@ -178,7 +178,9 @@ public class KafkaService {
 	 * @return
 	 */
 	public <T> T executeWithProjectClassLoader(Supplier<T> supplier) {
-		return executeWithClassLoader(IIvyProject.of(IProcessModelVersion.current()).getProjectClassLoader(), supplier);
+		return executeWithClassLoader(
+				IIvyProject.of(IProcessModelVersion.current())
+				.getProjectClassLoader(), supplier);
 	}
 
 	/**

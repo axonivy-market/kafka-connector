@@ -67,7 +67,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 240, "y" : 384 }
+        "at" : { "x" : 240, "y" : 416 }
       },
       "connect" : [
         { "id" : "f12", "to" : "f11" }
@@ -76,7 +76,7 @@
       "id" : "f11",
       "type" : "TaskEnd",
       "visual" : {
-        "at" : { "x" : 416, "y" : 384 }
+        "at" : { "x" : 416, "y" : 416 }
       }
     }, {
       "id" : "f13",
@@ -96,7 +96,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 240, "y" : 560 }
+        "at" : { "x" : 240, "y" : 592 }
       },
       "connect" : [
         { "id" : "f16", "to" : "f15" }
@@ -105,7 +105,7 @@
       "id" : "f15",
       "type" : "TaskEnd",
       "visual" : {
-        "at" : { "x" : 416, "y" : 560 }
+        "at" : { "x" : 416, "y" : 592 }
       }
     }, {
       "id" : "f17",
@@ -115,7 +115,7 @@
         "Message processing will end (but not block receiving new messages for the topic) at a process end element or at a task switch element."
       ],
       "visual" : {
-        "at" : { "x" : 648, "y" : 384 },
+        "at" : { "x" : 648, "y" : 416 },
         "size" : { "width" : 376, "height" : 80 }
       }
     }, {
@@ -126,7 +126,7 @@
         "Message processing will end (and the next message of the topic can be received) at a process end element or at a task switch element."
       ],
       "visual" : {
-        "at" : { "x" : 646, "y" : 553 },
+        "at" : { "x" : 646, "y" : 593 },
         "size" : { "width" : 369, "height" : 116 }
       }
     }, {
@@ -226,26 +226,47 @@
         "link" : "eventLink3.ivp"
       },
       "visual" : {
-        "at" : { "x" : 96, "y" : 560 },
+        "at" : { "x" : 96, "y" : 592 },
         "labelOffset" : { "x" : 13, "y" : 33 },
         "icon" : "res:/webContent/icons/logo.png?small"
       },
       "connect" : [
         { "id" : "f14", "to" : "f13" }
       ]
+    }, {
+      "id" : "f25",
+      "type" : "ProgramStart",
+      "name" : "PersonTopic",
+      "config" : {
+        "javaClass" : "com.axonivy.connector.kafka.KafkaStartEventBean",
+        "userConfig" : {
+          "topicPatternField" : "PersonTopic",
+          "kafkaConfigurationNameField" : "localhostSchematic",
+          "synchronousField" : "true"
+        },
+        "link" : "eventLink4.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 496 },
+        "labelOffset" : { "x" : 13, "y" : 33 },
+        "icon" : "res:/webContent/icons/logo.png?small"
+      },
+      "connect" : [
+        { "id" : "f26", "to" : "f8" }
+      ]
     } ],
   "layout" : {
     "lanes" : [ {
         "name" : "Demo",
         "offset" : 32,
-        "size" : 624,
+        "size" : 656,
         "lanes" : [ {
             "name" : "Sending",
             "size" : 240,
             "color" : "Sending"
           }, {
             "name" : "Receiving",
-            "size" : 384,
+            "size" : 416,
             "color" : "Receiving"
           } ]
       } ],
