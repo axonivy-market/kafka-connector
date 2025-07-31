@@ -96,7 +96,7 @@
         }
       },
       "visual" : {
-        "at" : { "x" : 240, "y" : 592 }
+        "at" : { "x" : 240, "y" : 576 }
       },
       "connect" : [
         { "id" : "f16", "to" : "f15" }
@@ -105,7 +105,7 @@
       "id" : "f15",
       "type" : "TaskEnd",
       "visual" : {
-        "at" : { "x" : 416, "y" : 592 }
+        "at" : { "x" : 416, "y" : 576 }
       }
     }, {
       "id" : "f17",
@@ -126,7 +126,7 @@
         "Message processing will end (and the next message of the topic can be received) at a process end element or at a task switch element."
       ],
       "visual" : {
-        "at" : { "x" : 646, "y" : 593 },
+        "at" : { "x" : 646, "y" : 577 },
         "size" : { "width" : 369, "height" : 116 }
       }
     }, {
@@ -226,7 +226,7 @@
         "link" : "eventLink3.ivp"
       },
       "visual" : {
-        "at" : { "x" : 96, "y" : 592 },
+        "at" : { "x" : 96, "y" : 576 },
         "labelOffset" : { "x" : 13, "y" : 33 },
         "icon" : "res:/webContent/icons/logo.png?small"
       },
@@ -247,26 +247,63 @@
         "link" : "eventLink4.ivp"
       },
       "visual" : {
-        "at" : { "x" : 96, "y" : 496 },
+        "at" : { "x" : 96, "y" : 720 },
         "labelOffset" : { "x" : 13, "y" : 33 },
         "icon" : "res:/webContent/icons/logo.png?small"
       },
       "connect" : [
-        { "id" : "f26", "to" : "f8" }
+        { "id" : "f26", "to" : "f27" }
       ]
+    }, {
+      "id" : "f27",
+      "type" : "Script",
+      "name" : "Log",
+      "config" : {
+        "output" : {
+          "code" : [
+            "ivy.log.info(\"Received Kafka message, topic ''{0}'', offset: {1}, key: ''{2}'', type: ''{3}'' value: ''{4}''.\",",
+            "  in.consumerRecord.topic(),",
+            "  in.consumerRecord.offset(),",
+            "  in.consumerRecord.key(),",
+            "  in.consumerRecord.value().getClass(),",
+            "  in.consumerRecord.value());"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 240, "y" : 720 }
+      },
+      "connect" : [
+        { "id" : "f29", "to" : "f28" }
+      ]
+    }, {
+      "id" : "f28",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 416, "y" : 720 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
+    }, {
+      "id" : "f30",
+      "type" : "ProcessAnnotation",
+      "name" : "Receiving complex objects instead of strings.",
+      "visual" : {
+        "at" : { "x" : 648, "y" : 720 },
+        "size" : { "width" : 372, "height" : 32 }
+      }
     } ],
   "layout" : {
     "lanes" : [ {
         "name" : "Demo",
         "offset" : 32,
-        "size" : 656,
+        "size" : 768,
         "lanes" : [ {
             "name" : "Sending",
             "size" : 240,
             "color" : "Sending"
           }, {
             "name" : "Receiving",
-            "size" : 416,
+            "size" : 528,
             "color" : "Receiving"
           } ]
       } ],
