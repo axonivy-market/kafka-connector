@@ -1,14 +1,14 @@
 package com.axonivy.connector.kafka;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.Consumer;
 
 /**
- * Default supplier for KafkaConsumer with a regex pattern topic.
+ * Default supplier for Consumer with a regex pattern topic.
  */
 public class DefaultConsumerSupplier<K, V> implements KafkaConsumerSupplier<K, V> {
 
 	@Override
-	public KafkaConsumer<K, V> supply(String configurationName) {
+	public Consumer<K, V> supply(String configurationName) {
 		return KafkaService.get().consumer(configurationName);
 	}
 }

@@ -60,11 +60,11 @@
       "config" : {
         "output" : {
           "code" : [
+            "import org.apache.kafka.clients.producer.Producer;",
             "import org.apache.kafka.clients.producer.ProducerRecord;",
             "import com.axonivy.connector.kafka.KafkaService;",
-            "import org.apache.kafka.clients.producer.KafkaProducer;",
             "",
-            "KafkaProducer producer = KafkaService.get().producer(in.configurationName);",
+            "Producer producer = KafkaService.get().producer(in.configurationName);",
             "in.futureMetadata = producer.send(new ProducerRecord(in.topic, in.key, in.value), in.#callback);"
           ]
         }

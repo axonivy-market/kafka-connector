@@ -6,13 +6,17 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.utils.Utils;
 
+import ch.ivyteam.ivy.application.IProcessModelVersion;
 import ch.ivyteam.ivy.environment.Ivy;
+import ch.ivyteam.ivy.project.IIvyProject;
 import ch.ivyteam.ivy.restricted.IvyThreadLocalNameConstants;
 import ch.ivyteam.util.threadcontext.IvyThreadContext;
 
@@ -38,20 +42,21 @@ public class KafkaService {
 	}
 
 	/**
-	 * Create a {@link KafkaProducer} configured by given properties name.
+	 * Create a {@link Producer} configured by given properties name.
 	 * 
 	 * @param <K>
 	 * @param <V>
 	 * @param properties
 	 * @return
 	 */
-	public <K, V> KafkaProducer<K, V> producer(Properties properties) {
+	public <K, V> Producer<K, V> producer(Properties properties) {
 		Ivy.log().debug("Creating producer with properties: {0}", properties);
-		return executeWithKafkaClassLoader(() -> new KafkaProducer<>(properties));
+		var producer = executeWithKafkaClassLoader(() -> new KafkaProducer<K, V>(properties));
+		return new ProjectAwareKafkaProducer<K, V>(producer);
 	}
 
 	/**
-	 * Get a {@link KafkaProducer} configured by configuration name.
+	 * Get a {@link Producer} configured by configuration name.
 	 * 
 	 * Re-uses cached producer if available.
 	 * 
@@ -61,40 +66,41 @@ public class KafkaService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <K, V> KafkaProducer<K, V> producer(String configurationName) {
+	public <K, V> Producer<K, V> producer(String configurationName) {
 		var cached = KafkaConfiguration.get(configurationName);
 		if(!cached.isProducerValid()) {
 			synchronized(this) {
 				if(!cached.isProducerValid()) {
 					if(cached.getProducer() != null) {
-						Ivy.log().info("Closing existing {0} for configuration ''{1}''", KafkaProducer.class.getSimpleName(), configurationName);
+						Ivy.log().info("Closing existing {0} for configuration ''{1}''", ProjectAwareKafkaProducer.class.getSimpleName(), configurationName);
 						cached.getProducer().close();
 						cached.setProducer(null);
 					}
-					Ivy.log().info("Creating a new {0} for configuration ''{1}''", KafkaProducer.class.getSimpleName(), configurationName);
+					Ivy.log().info("Creating a new {0} for configuration ''{1}''", ProjectAwareKafkaProducer.class.getSimpleName(), configurationName);
 					cached.setProducer(producer(cached.getProperties()));
 					cached.setProducerValid(true);
 				}
 			}
 		}
-		return (KafkaProducer<K, V>) cached.getProducer();
+		return (Producer<K, V>) cached.getProducer();
 	}
 
 	/**
-	 * Create a {@link KafkaConsumer} configured by given properties.
+	 * Create a {@link Consumer} configured by given properties.
 	 * 
 	 * @param <K>
 	 * @param <V>
 	 * @param properties
 	 * @return
 	 */
-	public <K, V> KafkaConsumer<K, V> consumer(Properties properties) {
+	public <K, V> Consumer<K, V> consumer(Properties properties) {
 		Ivy.log().debug("Creating consumer with properties: {0}", properties);
-		return executeWithKafkaClassLoader(() -> new KafkaConsumer<>(properties));
+		var consumer = executeWithKafkaClassLoader(() -> new KafkaConsumer<K, V>(properties));
+		return new ProjectAwareKafkaConsumer<K, V>(consumer);
 	}
 
 	/**
-	 * Create a {@link KafkaConsumer} configured by configuration name.
+	 * Create a {@link Consumer} configured by configuration name.
 	 * 
 	 * Consumers are not thread-safe, so always create a new consumer.
 	 * 
@@ -104,7 +110,7 @@ public class KafkaService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <K, V> KafkaConsumer<K, V> consumer(String configurationName) {
+	public <K, V> Consumer<K, V> consumer(String configurationName) {
 		return consumer(KafkaConfiguration.get(configurationName).getProperties());
 	}
 
@@ -162,6 +168,17 @@ public class KafkaService {
 	 */
 	public <T> T executeWithKafkaClassLoader(Supplier<T> supplier) {
 		return executeWithClassLoader(Utils.getKafkaClassLoader(), supplier);
+	}
+
+	/**
+	 * Execute a function with the current project's (i.e. the project where this request was started) {@link ClassLoader}.
+	 * 
+	 * @param <T>
+	 * @param supplier
+	 * @return
+	 */
+	public <T> T executeWithProjectClassLoader(Supplier<T> supplier) {
+		return executeWithClassLoader(IIvyProject.of(IProcessModelVersion.current()).getProjectClassLoader(), supplier);
 	}
 
 	/**

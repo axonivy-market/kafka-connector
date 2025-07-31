@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -108,7 +108,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		private String configurationName;
 		private KafkaConsumerSupplier<?, ?> consumerSupplier;
 		private boolean synchronous;
-		private KafkaConsumer<?, ?> consumer;
+		private Consumer<?, ?> consumer;
 
 		public synchronized void start(String configurationName, KafkaConsumerSupplier<?, ?> consumerSupplier, boolean synchronous) {
 			log().info("KafkaReader start");
@@ -151,6 +151,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 							lastConfigId = configId;
 						}
 						var pollTimeout = Duration.ofMillis(KafkaService.get().getPollTimeoutMs());
+
 						ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
 						for (ConsumerRecord<?, ?> record : records) {
 							log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
