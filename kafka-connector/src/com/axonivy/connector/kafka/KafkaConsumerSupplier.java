@@ -1,7 +1,7 @@
 package com.axonivy.connector.kafka;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.Consumer;
 
 public interface KafkaConsumerSupplier<K, V> {
-	public KafkaConsumer<K, V> supply(String configurationName);
+	public Consumer<K, V> supply(String configurationName);
 }

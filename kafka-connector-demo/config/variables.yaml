@@ -30,7 +30,7 @@ Variables:
       specific:
         avro:
           # deserializing to POJO does not work, if the class is not in the classpath of the connector project
-          reader: false
+          reader: true
       schema:
         registry:
           url: 'http://localhost:9081'

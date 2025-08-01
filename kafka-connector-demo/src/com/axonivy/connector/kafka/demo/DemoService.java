@@ -7,11 +7,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import org.apache.avro.LogicalTypes;
 import org.apache.avro.data.TimeConversions;
 import org.apache.avro.data.TimeConversions.DateConversion;
-import org.apache.avro.generic.GenericData.Array;
-import org.apache.avro.generic.GenericData.Record;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -95,7 +92,6 @@ public class DemoService {
 				 * Note: Consuming objects with a StartEventBean currently requires to inherit and
 				 * implement your own version to set the thread context classloader before the first
 				 * poll!
-				 */
 				var persRec = (Record)r.value();
 
 				person = Person.newBuilder()
@@ -119,6 +115,9 @@ public class DemoService {
 							.build()
 							);
 				}
+				 */
+
+				person = (Person)r.value();
 			}
 		}
 		catch (Exception e) {

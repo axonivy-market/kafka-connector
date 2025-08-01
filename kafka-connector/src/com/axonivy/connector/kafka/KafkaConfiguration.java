@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 
 import ch.ivyteam.ivy.application.IApplication;
 import ch.ivyteam.ivy.bpm.error.BpmError;
@@ -22,7 +22,7 @@ public class KafkaConfiguration {
 	private String name;
 	private Properties properties;
 	private boolean producerValid = false;
-	private KafkaProducer<?, ?> producer;
+	private Producer<?, ?> producer;
 
 	public static String getKafkaGlobalVariable() {
 		return KAFKA_GLOBAL_VARIABLE;
@@ -186,10 +186,10 @@ public class KafkaConfiguration {
 	public void setProducerValid(boolean producerValid) {
 		this.producerValid = producerValid;
 	}
-	public KafkaProducer<?, ?> getProducer() {
+	public Producer<?, ?> getProducer() {
 		return producer;
 	}
-	public void setProducer(KafkaProducer<?, ?> producer) {
+	public void setProducer(Producer<?, ?> producer) {
 		this.producer = producer;
 	}
 
