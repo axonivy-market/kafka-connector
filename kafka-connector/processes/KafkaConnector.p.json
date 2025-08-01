@@ -42,6 +42,13 @@
       "visual" : {
         "at" : { "x" : 96, "y" : 64 },
         "labelOffset" : { "x" : 49, "y" : 57 },
+        "description" : [
+          "Send a message.",
+          "",
+          "<b><font color=\"red\">Please note, that the send will be done in the context of the connector.</font></b>",
+          "",
+          "If you want to send and receive your own classes viy a schema registry, deserializing will not work using this sub-process, because your classes will not be known to the connector. In this case either create a similiar sub-process in your own project or use the Java version of sending in a script step."
+        ],
         "icon" : "res:/webContent/icons/logo.png?small"
       },
       "connect" : [
@@ -60,12 +67,9 @@
       "config" : {
         "output" : {
           "code" : [
-            "import org.apache.kafka.clients.producer.Producer;",
-            "import org.apache.kafka.clients.producer.ProducerRecord;",
             "import com.axonivy.connector.kafka.KafkaService;",
             "",
-            "Producer producer = KafkaService.get().producer(in.configurationName);",
-            "in.futureMetadata = producer.send(new ProducerRecord(in.topic, in.key, in.value), in.#callback);"
+            "in.futureMetadata = KafkaService.get().send(in.configurationName, in.topic, in.key, in.value, in.#callback);"
           ]
         }
       },

@@ -97,10 +97,12 @@
 							Last Received: <p:outputLabel value="#{data.person.id}" />
 						</div>
 						<div class="ui-g-10 ui-lg-10 ui-md-8 ui-sm-6">
-							Person objects are sent to PersonTopicS and received
-							directly by a temporary consumer. This demo makes use of a schema
-							registry and is therefore kept simple to avoid start exceptions
-							in case you do not have access to a schema registry.
+							Person objects are sent to PersonTopic and received
+							directly as objects by a StartEventBean. This demo makes use of a schema
+							registry. The schema registry must be configured to accept new schemas
+							automatically. Note the use of Java to send and receive objects. This
+							is due to the fact, that send and receive must be done in the context
+							of a project having access to the sent objects. 
 						</div>
 					</div>
 

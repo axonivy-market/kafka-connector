@@ -247,10 +247,9 @@
             "",
             "Person person = DemoService.get().createRandomPerson();",
             "",
-            "Producer producer = KafkaService.get().producer(\"localhostSchematic\");",
-            "Future futureMetadata = producer.send(new ProducerRecord(\"PersonTopic\", person.id, person), null);",
-            "// Wait for return.",
-            "RecordMetadata md = futureMetadata.get() as RecordMetadata;",
+            "// Send from Java, so that the Person.class will be available. Wait for return.",
+            "RecordMetadata md = KafkaService.get().send(\"localhostSchematic\", \"PersonTopic\", person.id, person, null).get() as RecordMetadata;",
+            "",
             "ivy.log.info(\"Metadata: offset: {0}\", md.offset());"
           ]
         }
