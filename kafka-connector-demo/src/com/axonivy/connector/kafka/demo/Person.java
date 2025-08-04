@@ -580,13 +580,3 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
