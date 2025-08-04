@@ -101,6 +101,7 @@ public class ProjectAwareKafkaConsumer<K, V> implements Consumer<K, V> {
 		delegate.assign(partitions);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public ConsumerRecords<K, V> poll(long timeoutMs) {
 		return KafkaService.get().executeWithProjectClassLoader(() -> delegate.poll(timeoutMs));
@@ -176,11 +177,13 @@ public class ProjectAwareKafkaConsumer<K, V> implements Consumer<K, V> {
 		return delegate.position(partition, timeout);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public OffsetAndMetadata committed(TopicPartition partition) {
 		return delegate.committed(partition);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public OffsetAndMetadata committed(TopicPartition partition, Duration timeout) {
 		return delegate.committed(partition, timeout);

@@ -68,6 +68,7 @@ public class ProjectAwareKafkaProducer<K, V> implements Producer<K, V> {
 		delegate.beginTransaction();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, String consumerGroupId)
 			throws ProducerFencedException {
