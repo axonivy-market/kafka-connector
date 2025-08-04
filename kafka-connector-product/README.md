@@ -213,6 +213,9 @@ use of `Consumer`s created in some different way.
 
 ### Configuration
 
+> [!NOTE]
+> The variable path `kafka-connector` changed to `kafkaConnector` from version 12.0.2.
+
 Configuration can be done in global variables where some simple inheritence mechanism
 is provided. All Kafka configuration is stored below the `kafkaConnector` global
 variable. At this level you should configure the following global settings.
