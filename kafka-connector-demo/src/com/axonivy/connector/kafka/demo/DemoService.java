@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import org.apache.avro.data.TimeConversions;
-import org.apache.avro.data.TimeConversions.DateConversion;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -19,7 +17,6 @@ import ch.ivyteam.ivy.environment.Ivy;
 
 public class DemoService {
 	private static final DemoService INSTANCE = new DemoService();
-	private static final DateConversion DATE_CONVERSION = new TimeConversions.DateConversion();
 	private static final Random RND = new Random();
 	private static final List<String> countries = List.of("AT", "DE", "CH");
 	private static long personId;
