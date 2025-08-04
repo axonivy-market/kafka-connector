@@ -53,8 +53,7 @@ or web-based tools. Please note the licence conditions.
 ### Apache Kafka in Docker
 
 If you do not have access to an existing Apache Kafka server, but have Docker installed, you can quickly start
-an example setup including a schema registry by using our example
-[docker-compose.yml](https://github.com/axonivy-market/kafkaConnector/blob/master/kafkaConnector-product/files/docker-compose.yml) file.
+an example setup including a schema registry by using our example `docker-compose.yml` file in the demo project.
 
 Copy this file to a directory on your machine, `cd` to that directory and enter the command:
 
