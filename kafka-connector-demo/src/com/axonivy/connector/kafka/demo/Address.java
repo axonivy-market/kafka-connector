@@ -118,7 +118,6 @@ public class Address extends org.apache.avro.specific.SpecificRecordBase impleme
 
 	// Used by DatumReader.  Applications should not call.
 	@Override
-	@SuppressWarnings(value="unchecked")
 	public void put(int field$, java.lang.Object value$) {
 		switch (field$) {
 		case 0: street = (java.lang.CharSequence)value$; break;
