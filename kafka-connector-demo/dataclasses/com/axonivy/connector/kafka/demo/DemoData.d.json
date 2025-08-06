@@ -9,5 +9,8 @@
   }, {
     "name" : "consumerRecord",
     "type" : "org.apache.kafka.clients.consumer.ConsumerRecord"
+  }, {
+    "name" : "signalData",
+    "type" : "String"
   } ]
 }
