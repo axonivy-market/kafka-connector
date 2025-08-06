@@ -5,27 +5,35 @@
   "isBusinessCaseData" : false,
   "fields" : [ {
     "name" : "key",
-    "type" : "String"
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
   }, {
     "name" : "value",
-    "type" : "String"
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
   }, {
     "name" : "topic",
-    "type" : "String"
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
   }, {
     "name" : "configuration",
-    "type" : "String"
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
   }, {
     "name" : "simpleCallback",
-    "type" : "com.axonivy.connector.kafka.demo.SimpleDemoCallback"
+    "type" : "com.axonivy.connector.kafka.demo.SimpleDemoCallback",
+    "modifiers" : [ "PERSISTENT" ]
   }, {
     "name" : "ivyCallback",
-    "type" : "com.axonivy.connector.kafka.demo.IvyDemoCallback"
+    "type" : "com.axonivy.connector.kafka.demo.IvyDemoCallback",
+    "modifiers" : [ "PERSISTENT" ]
   }, {
     "name" : "configurationName",
-    "type" : "String"
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
   }, {
     "name" : "person",
-    "type" : "com.axonivy.connector.kafka.demo.Person"
+    "type" : "com.axonivy.connector.kafka.demo.Person",
+    "modifiers" : [ "PERSISTENT" ]
   } ]
 }
