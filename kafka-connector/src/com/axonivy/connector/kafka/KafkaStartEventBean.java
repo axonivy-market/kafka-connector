@@ -5,15 +5,15 @@ package com.axonivy.connector.kafka;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,7 +22,6 @@ import ch.ivyteam.ivy.process.eventstart.AbstractProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBeanRuntime;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventResponse;
-import ch.ivyteam.ivy.process.eventstart.IProcessStarter;
 import ch.ivyteam.ivy.process.extension.ProgramConfig;
 import ch.ivyteam.ivy.process.extension.ui.ExtensionUiBuilder;
 import ch.ivyteam.ivy.process.extension.ui.UiEditorExtension;
@@ -46,44 +45,44 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	@Override
 	public void initialize(IProcessStartEventBeanRuntime eventRuntime, ProgramConfig configuration) {
 		super.initialize(eventRuntime, configuration);
-		log().debug("Initializing with configuration: {0}", configuration);
 		eventRuntime.poll().disable();
 		eventRuntime.threads().boundToEventLifecycle(reader::run);
+		log().debug("Initialized KafkaStartEventBean.");
 	}
 
 	@Override
 	public synchronized void start(IProgressMonitor monitor) throws ServiceException {
-		String kafkaConfigurationName = getKafkaConfigurationName();
-		var kafkaConfig = KafkaService.get().getConfigurationProperties(kafkaConfigurationName);
+		var configurationName = getKafkaConfigurationName();
 
 		log().debug("Starting Kafka consumer for topic pattern: ''{0}'' and configuration name: ''{1}''",
-				getTopicPattern(), kafkaConfigurationName);
+				getTopicPattern(), configurationName);
 
-		KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier = new DefaultTopicConsumerSupplier<>();
+		KafkaConsumerSupplier<?, ?> topicConsumerSupplier = new DefaultConsumerSupplier<>();
 
 		String topicConsumerSupplierClass = KafkaService.get().getTopicConsumerSupplier();
 		if(topicConsumerSupplierClass != null) {
 			try {
-				topicConsumerSupplier = (KafkaTopicConsumerSupplier<?, ?>) Class.forName(topicConsumerSupplierClass).getDeclaredConstructor().newInstance();
+				topicConsumerSupplier = (KafkaConsumerSupplier<?, ?>) Class.forName(topicConsumerSupplierClass).getDeclaredConstructor().newInstance();
 			} catch (Exception e) {
 				log().error("Error while finding topic consumer supplier ''{0}'', falling back to default consumer supplier ''{1}''.",
 						topicConsumerSupplierClass, topicConsumerSupplier.getClass().getCanonicalName());
 			}
 		}
-		reader.start(kafkaConfig, topicConsumerSupplier, isSynchronous(), Duration.ofMillis(KafkaService.get().getPollTimeoutMs()));
+		reader.start(configurationName, topicConsumerSupplier, isSynchronous());
 		super.start(monitor);
-		log().info("Started");
+		log().info("Started KafkaStartEventBean.");
 	}
-	
+
 	@Override
 	public synchronized void stop(IProgressMonitor monitor) throws ServiceException {
 		reader.stop();
 		super.stop(monitor);
+		log().info("Stopped KafkaStartEventBean.");
 	}
 
 	@Override
 	public void poll() {
-		log().warn("Did not expect call to poll (polling was disabled).");
+		log().warn("Did not expect call to poll (polling was disabled in KafkaStartEventBean).");
 	}
 
 	protected Logger log() {
@@ -102,63 +101,89 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		String synchronousString = getConfig().get(SYNCHRONOUS_FIELD);
 		return StringUtils.isNotBlank(synchronousString) && Boolean.valueOf(synchronousString);
 	}
-	
+
 	private final class KafkaReader {
 		private record AsyncRequest(ConsumerRecord<?,?> record, Future<IProcessStartEventResponse> future) {};
 		private ArrayList<AsyncRequest> asyncRequests = new ArrayList<>();
-		private Properties configuration;
-		private KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier;
+		private String configurationName;
+		private KafkaConsumerSupplier<?, ?> consumerSupplier;
 		private boolean synchronous;
-		private Duration pollTimeout;
-		private KafkaConsumer<?, ?> consumer;
+		private Consumer<?, ?> consumer;
 
-		public synchronized void start(Properties configuration, KafkaTopicConsumerSupplier<?, ?> topicConsumerSupplier, boolean synchronous, Duration pollTimeout) {
-			this.configuration = configuration;
-			this.topicConsumerSupplier = topicConsumerSupplier;
+		public synchronized void start(String configurationName, KafkaConsumerSupplier<?, ?> consumerSupplier, boolean synchronous) {
+			log().info("KafkaReader start");
+			this.configurationName = configurationName;
+			this.consumerSupplier = consumerSupplier;
 			this.synchronous = synchronous;
-			this.pollTimeout = pollTimeout;
 		}
-		
+
 		public void stop() {
+			log().info("KafkaReader stop");
 			if(consumer != null) {
 				consumer.wakeup();
 			}
 		}
 
 		private void run() {
-			try {
+			while(!Thread.currentThread().isInterrupted()) {
 				try {
-					log().debug("Handle Kafka messages synchronously: {0}", synchronous);
-					
-					createConsumer();
+					log().info("Creating consumer for configuration ''{0}'' topic ''{1}'' to handle Kafka messages synchronously: {2}", configurationName, getTopicPattern(), synchronous);
+
+					var lastConfigId = KafkaConfiguration.get(configurationName).getConfigId();
+
+					consumer = consumerSupplier.supply(configurationName);
+					consumer.subscribe(Pattern.compile(getTopicPattern()));
+
+					log().debug("Consumer {0} subscribed to Kafka topic pattern: {1}", consumer, getTopicPattern());
 
 					while(!Thread.currentThread().isInterrupted()) {
+						log().debug("Polling ''{0}:{1}''", configurationName, getTopicPattern());
+						var configuration = KafkaConfiguration.get(configurationName);
+						var configId = configuration.getConfigId();
+						if(!configuration.hasConfigId(lastConfigId)) {
+							log().info("Configuration change detected for consumer {0}:{1}, config Id changed from ''{2}'' to ''{3}''", configurationName, getTopicPattern(), lastConfigId, configId);
+							consumer.close();
+							log().info("Closed consumer {0}:{1}", configurationName, getTopicPattern());
+							consumer = consumerSupplier.supply(configurationName);
+							consumer.subscribe(Pattern.compile(getTopicPattern()));
+							log().info("Created a new consumer {0}:{1}", configurationName, getTopicPattern());
+
+							lastConfigId = configId;
+						}
+						var pollTimeout = Duration.ofMillis(KafkaService.get().getPollTimeoutMs());
+
 						ConsumerRecords<?, ?> records = consumer.poll(pollTimeout);
 						for (ConsumerRecord<?, ?> record : records) {
 							log().debug("Received record, topic: {0} offset:{1} key: {2} val: {3} record: {4}",
 									record.topic(), record.offset(), record.key(), record.value(), record);
-							
+
 							startProcess(record, synchronous);
 						}
 						consumeAsyncRequests();
 					}
-				} finally {
-					closeConsumer();
 				}
-			} catch (WakeupException | InterruptException e) {
-				log().info("Consumer was woken up. This is ok, when there is a shutdown.");
-				return;
-			}
-			catch(Exception e) {
-				log().error("Exception while listening for topic, closing consumer.", e);
-				throw new RuntimeException("Exception while listening for topic.", e);
+				catch (WakeupException | InterruptException e) {
+					log().info("Consumer was woken up. This is ok, when there is a shutdown. Consumer: {0}", consumer);
+				}
+				catch(Exception e) {
+					log().error("Exception while listening for topic, closing consumer {0}.", e, consumer);
+					throw new RuntimeException("Exception while listening for topic.", e);
+				}
+				finally {
+					log().info("Closing consumer {0}", consumer);
+					try {
+						consumer.close();
+					} catch (InterruptException e) {
+						log().info("Ignoring exception while closing consumer for configuration ''{0}:{1}'' ({2})", configurationName, getTopicPattern(), e);
+					}
+					consumer = null;
+				}
 			}
 		}
 
-		
 		private void startProcess(ConsumerRecord<?, ?> record, boolean synchronous) {
 			log().debug("Firing task to handle Kafka topic ''{0}'' offset {1}.", record.topic(), record.offset());
-			IProcessStarter processStarter = getEventBeanRuntime()
+			var processStarter = getEventBeanRuntime()
 					.processStarter()
 					.withReason("Received Kafka record " + record)
 					.withParameter("consumer", consumer)
@@ -184,7 +209,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 					record.topic(), record.offset(), eventResponse.getStartedTask().getId(),
 					eventResponse.getParameters().keySet().stream().sorted().collect(Collectors.joining(", ")));
 		}
-		
+
 		private void consumeAsyncRequests() {
 			var consumed = new ArrayList<AsyncRequest>();
 			for (var asyncRequest : asyncRequests) {
@@ -204,19 +229,6 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 			}
 			asyncRequests.removeAll(consumed);
 		}
-		
-		private synchronized void createConsumer() {
-			consumer = topicConsumerSupplier.apply(configuration, getTopicPattern());
-			log().debug("Got consumer {0} which subscribed to Kafka topic pattern: {1}", consumer, getTopicPattern());
-		}
-
-		private synchronized void closeConsumer() {
-			if(consumer != null) {
-				consumer.close();
-			}
-			consumer = null;
-		}
-
 	}
 
 	/**
@@ -258,7 +270,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 					Configuration name:
 					Name of a collection of global variables below
 					%s which defines a specific Kafka consumer configuration.
-					""", KafkaService.get().getKafkaGlobalVariableName());
+					""", KafkaConfiguration.getKafkaGlobalVariable());
 			ui.label(helpTopic).multiline().create();
 		}
 	}

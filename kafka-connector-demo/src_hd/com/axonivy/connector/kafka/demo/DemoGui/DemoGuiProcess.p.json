@@ -77,8 +77,10 @@
       "config" : {
         "output" : {
           "code" : [
+            "import com.axonivy.connector.kafka.KafkaConfiguration;",
+            "import com.axonivy.connector.kafka.demo.IvyDemoCallback;",
+            "import com.axonivy.connector.kafka.demo.SimpleDemoCallback;",
             "import com.axonivy.connector.kafka.KafkaService;",
-            "import com.axonivy.connector.kafka.demo.DemoService;",
             "",
             "KafkaService kafkaService = KafkaService.get();",
             "",
@@ -86,8 +88,10 @@
             "in.key = \"my key\";",
             "in.value = \"my value\";",
             "",
-            "// just for display in GUI",
-            "in.configuration = KafkaService.get().getPropertiesString(KafkaService.get().getConfigurationProperties(in.configurationName));"
+            "// In dataclass for display in GUI",
+            "in.configuration = \"\" + KafkaConfiguration.get(in.configurationName);",
+            "in.simpleCallback = new SimpleDemoCallback();",
+            "in.ivyCallback = new IvyDemoCallback();"
           ]
         }
       },
@@ -114,7 +118,7 @@
       "type" : "SubProcessCall",
       "name" : "Send TopicA",
       "config" : {
-        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "processCall" : "KafkaConnector:send(String,String,Object,Object,org.apache.kafka.clients.producer.Callback)",
         "call" : {
           "map" : {
             "param.configurationName" : "in.configurationName",
@@ -122,6 +126,14 @@
             "param.key" : "in.key",
             "param.value" : "in.value"
           }
+        },
+        "output" : {
+          "code" : [
+            "import org.apache.kafka.clients.producer.RecordMetadata;",
+            "// Wait for return.",
+            "RecordMetadata md = result.futureMetadata.get() as RecordMetadata;",
+            "ivy.log.info(\"Metadata: offset: {0}\", md.offset());"
+          ]
         }
       },
       "visual" : {
@@ -136,13 +148,14 @@
       "type" : "SubProcessCall",
       "name" : "Send TopicB",
       "config" : {
-        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "processCall" : "KafkaConnector:send(String,String,Object,Object,org.apache.kafka.clients.producer.Callback)",
         "call" : {
           "map" : {
             "param.configurationName" : "in.configurationName",
             "param.topic" : "\"TopicB\"",
             "param.key" : "in.key",
-            "param.value" : "in.value"
+            "param.value" : "in.value",
+            "param.callback" : "in.simpleCallback"
           }
         }
       },
@@ -158,13 +171,14 @@
       "type" : "SubProcessCall",
       "name" : "Send TopicS",
       "config" : {
-        "processCall" : "KafkaConnector:send(String,String,Object,Object)",
+        "processCall" : "KafkaConnector:send(String,String,Object,Object,org.apache.kafka.clients.producer.Callback)",
         "call" : {
           "map" : {
             "param.configurationName" : "in.configurationName",
             "param.topic" : "\"TopicS\"",
             "param.key" : "in.key",
-            "param.value" : "in.value"
+            "param.value" : "in.value",
+            "param.callback" : "com.axonivy.connector.kafka.KafkaService.get().ivyCallback(in.ivyCallback)"
           }
         }
       },
@@ -175,5 +189,81 @@
       "connect" : [
         { "id" : "f19", "to" : "f3" }
       ]
+    }, {
+      "id" : "f20",
+      "type" : "ProcessAnnotation",
+      "name" : "Use with a callback (without Ivy functionality).",
+      "visual" : {
+        "at" : { "x" : 544, "y" : 256 }
+      }
+    }, {
+      "id" : "f21",
+      "type" : "ProcessAnnotation",
+      "name" : "Typical use with a Future.",
+      "visual" : {
+        "at" : { "x" : 544, "y" : 160 }
+      }
+    }, {
+      "id" : "f22",
+      "type" : "ProcessAnnotation",
+      "name" : "Use with a callback with Ivy functionality.",
+      "visual" : {
+        "at" : { "x" : 544, "y" : 352 }
+      }
+    }, {
+      "id" : "f23",
+      "type" : "HtmlDialogEventStart",
+      "name" : "sendPersonTopic",
+      "config" : {
+        "guid" : "198512295BE985BA"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 448 }
+      },
+      "connect" : [
+        { "id" : "f25", "to" : "f30" }
+      ]
+    }, {
+      "id" : "f24",
+      "type" : "HtmlDialogEnd",
+      "visual" : {
+        "at" : { "x" : 368, "y" : 448 },
+        "labelOffset" : { "x" : 10, "y" : 30 }
+      }
+    }, {
+      "id" : "f30",
+      "type" : "Script",
+      "name" : "Send PersonTopic",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.connector.kafka.KafkaService;",
+            "import org.apache.kafka.clients.producer.RecordMetadata;",
+            "import com.axonivy.connector.kafka.demo.DemoService;",
+            "import com.axonivy.connector.kafka.demo.Person;",
+            "",
+            "Person person = DemoService.get().createRandomPerson();",
+            "",
+            "// Send from Java, so that the Person.class will be available. Wait for return.",
+            "RecordMetadata md = KafkaService.get().send(\"localhostSchematic\", \"PersonTopic\", person.id, person, null).get() as RecordMetadata;",
+            "",
+            "ivy.log.info(\"Metadata: offset: {0}\", md.offset());"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 448 },
+        "color" : "default"
+      },
+      "connect" : [
+        { "id" : "f31", "to" : "f24" }
+      ]
+    }, {
+      "id" : "f26",
+      "type" : "ProcessAnnotation",
+      "name" : "Use from Java to work with Schema Registry",
+      "visual" : {
+        "at" : { "x" : 544, "y" : 448 }
+      }
     } ]
 }

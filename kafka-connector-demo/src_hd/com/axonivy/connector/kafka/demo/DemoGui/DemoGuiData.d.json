@@ -5,23 +5,27 @@
   "isBusinessCaseData" : false,
   "fields" : [ {
     "name" : "key",
-    "type" : "String",
-    "modifiers" : [ "PERSISTENT" ]
+    "type" : "String"
   }, {
     "name" : "value",
-    "type" : "String",
-    "modifiers" : [ "PERSISTENT" ]
+    "type" : "String"
   }, {
     "name" : "topic",
-    "type" : "String",
-    "modifiers" : [ "PERSISTENT" ]
-  }, {
-    "name" : "configurationName",
-    "type" : "String",
-    "modifiers" : [ "PERSISTENT" ]
+    "type" : "String"
   }, {
     "name" : "configuration",
-    "type" : "String",
-    "modifiers" : [ "PERSISTENT" ]
+    "type" : "String"
+  }, {
+    "name" : "simpleCallback",
+    "type" : "com.axonivy.connector.kafka.demo.SimpleDemoCallback"
+  }, {
+    "name" : "ivyCallback",
+    "type" : "com.axonivy.connector.kafka.demo.IvyDemoCallback"
+  }, {
+    "name" : "configurationName",
+    "type" : "String"
+  }, {
+    "name" : "person",
+    "type" : "com.axonivy.connector.kafka.demo.Person"
   } ]
 }
