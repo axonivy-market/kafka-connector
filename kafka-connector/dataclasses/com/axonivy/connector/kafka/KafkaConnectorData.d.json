@@ -15,5 +15,11 @@
   }, {
     "name" : "value",
     "type" : "Object"
+  }, {
+    "name" : "callback",
+    "type" : "org.apache.kafka.clients.producer.Callback"
+  }, {
+    "name" : "futureMetadata",
+    "type" : "java.util.concurrent.Future<org.apache.kafka.clients.producer.RecordMetadata>"
   } ]
 }

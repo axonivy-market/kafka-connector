@@ -1,0 +1,59 @@
+[
+	{
+		"type": "record",
+		"name": "Address",
+		"namespace": "com.axonivy.connector.kafka.demo",
+		"fields": [
+			{
+				"name": "street",
+				"type": "string"
+			},
+			{
+				"name": "city",
+				"type": "string"
+			},
+			{
+				"name": "zipCode",
+				"type": "string"
+			},
+			{
+				"name": "country",
+				"type": "string"
+			}
+		]
+	},
+	{
+		"type": "record",
+		"name": "Person",
+		"namespace": "com.axonivy.connector.kafka.demo",
+		"fields": [
+			{
+				"name": "id",
+				"type": "long"
+			},
+			{
+				"name": "firstname",
+				"type": "string"
+			},
+			{
+				"name": "lastname",
+				"type": "string"
+			},
+			{
+				"name": "dob",
+				"type": {
+					"type": "int",
+					"logicalType": "date"
+				}
+			},
+			{
+				"name": "addresses",
+				"type": {
+					"type": "array",
+					"items": "com.axonivy.connector.kafka.demo.Address"
+				},
+				"default": []
+			}
+		]
+	}
+]

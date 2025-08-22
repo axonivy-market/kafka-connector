@@ -8,7 +8,7 @@
   "elements" : [ {
       "id" : "f0",
       "type" : "CallSubStart",
-      "name" : "send(String,String,Object,Object)",
+      "name" : "send(String,String,Object,Object,Callback)",
       "config" : {
         "signature" : "send",
         "input" : {
@@ -16,13 +16,23 @@
             { "name" : "configurationName", "type" : "String", "desc" : "" },
             { "name" : "topic", "type" : "String", "desc" : "" },
             { "name" : "key", "type" : "Object", "desc" : "" },
-            { "name" : "value", "type" : "Object", "desc" : "" }
+            { "name" : "value", "type" : "Object", "desc" : "" },
+            { "name" : "callback", "type" : "org.apache.kafka.clients.producer.Callback", "desc" : "can be null, if not used" }
           ],
           "map" : {
+            "out.callback" : "param.#callback",
             "out.configurationName" : "param.configurationName",
             "out.key" : "param.key",
             "out.topic" : "param.topic",
             "out.value" : "param.value"
+          }
+        },
+        "result" : {
+          "params" : [
+            { "name" : "futureMetadata", "type" : "java.util.concurrent.Future<org.apache.kafka.clients.producer.RecordMetadata>", "desc" : "" }
+          ],
+          "map" : {
+            "result.futureMetadata" : "in.futureMetadata"
           }
         }
       },
@@ -31,6 +41,14 @@
       ],
       "visual" : {
         "at" : { "x" : 96, "y" : 64 },
+        "labelOffset" : { "x" : 49, "y" : 57 },
+        "description" : [
+          "Send a message.",
+          "",
+          "<b><font color=\"red\">Please note, that the send will be done in the context of the connector.</font></b>",
+          "",
+          "If you want to send and receive your own classes viy a schema registry, deserializing will not work using this sub-process, because your classes will not be known to the connector. In this case either create a similiar sub-process in your own project or use the Java version of sending in a script step."
+        ],
         "icon" : "res:/webContent/icons/logo.png?small"
       },
       "connect" : [
@@ -49,12 +67,9 @@
       "config" : {
         "output" : {
           "code" : [
-            "import org.apache.kafka.clients.producer.ProducerRecord;",
             "import com.axonivy.connector.kafka.KafkaService;",
-            "import org.apache.kafka.clients.producer.KafkaProducer;",
             "",
-            "KafkaProducer producer = KafkaService.get().createProducer(in.configurationName);",
-            "producer.send(new ProducerRecord(in.topic, in.key, in.value));"
+            "in.futureMetadata = KafkaService.get().send(in.configurationName, in.topic, in.key, in.value, in.#callback);"
           ]
         }
       },
@@ -64,5 +79,27 @@
       "connect" : [
         { "id" : "f2", "to" : "f1" }
       ]
+    }, {
+      "id" : "f5",
+      "type" : "ProgramStart",
+      "name" : "Kafka Cleanup",
+      "config" : {
+        "javaClass" : "com.axonivy.connector.kafka.KafkaCleanupStartEventBean",
+        "link" : "eventLink.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 240 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      },
+      "connect" : [
+        { "id" : "f7", "to" : "f6" }
+      ]
+    }, {
+      "id" : "f6",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 288, "y" : 240 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
     } ]
 }

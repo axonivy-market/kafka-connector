@@ -16,12 +16,24 @@
     "type" : "String",
     "modifiers" : [ "PERSISTENT" ]
   }, {
+    "name" : "configuration",
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "simpleCallback",
+    "type" : "com.axonivy.connector.kafka.demo.SimpleDemoCallback",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
+    "name" : "ivyCallback",
+    "type" : "com.axonivy.connector.kafka.demo.IvyDemoCallback",
+    "modifiers" : [ "PERSISTENT" ]
+  }, {
     "name" : "configurationName",
     "type" : "String",
     "modifiers" : [ "PERSISTENT" ]
   }, {
-    "name" : "configuration",
-    "type" : "String",
+    "name" : "person",
+    "type" : "com.axonivy.connector.kafka.demo.Person",
     "modifiers" : [ "PERSISTENT" ]
   } ]
 }
