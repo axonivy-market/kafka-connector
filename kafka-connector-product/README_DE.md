@@ -1,307 +1,318 @@
-# Apache #Kafka Anschluss
+# Apache Kafka Connector
 
-[Apache #Kafka](https://kafka.apache.org/) ist ein verteilt strömen Bahnsteig
-jener erlaubt du zu verlegen und abonnieren zu Ströme von Schallplatten. Es ist
-gestaltet zu bedienen große Inhalte von real-Zeit Daten strömen und können sein
-benutzt zu implementieren real-Zeit Strömung #Daten Pipelines und Anträge.
-#Kafka ist gewöhnlich für Nutzung benutzt Fälle wie Daten Integration, real-Zeit
-#Analytik, und Log Ansammlung - besonders als große Beträge von Daten sind
-involviert.
+[Apache Kafka](https://kafka.apache.org/) ist eine verteilte
+Streaming-Plattform, mit der Sie Datensatz-Streams veröffentlichen und
+abonnieren können. Sie ist für die Verarbeitung großer Mengen von
+Echtzeit-Datenströmen ausgelegt und kann zur Implementierung von
+Echtzeit-Streaming-Datenpipelines und -Anwendungen verwendet werden. Kafka wird
+häufig für Anwendungsfälle wie Datenintegration, Echtzeitanalysen und
+Protokollaggregation eingesetzt – insbesondere wenn es um große Datenmengen
+geht.
 
-Das Apache #Kafka Anschluss von #Axon #Ivy hilft du beschleunigst mal eure
-Arbeitsgang Automatisierung versehen Zugang zu den Charakterzügen von Apache
-#Kafka.
+Der Apache Kafka Connector von Axon Ivy hilft Ihnen dabei, Ihre
+Prozessautomatisierung zu beschleunigen, indem er Ihnen Zugriff auf die
+Funktionen von Apache Kafka bietet.
 
-Dieser Anschluss:
+Dieser Konnektor:
 
-- Ist gegründet weiter das [Apache #Kafka
-  API](https://kafka.apache.org/34/javadoc/).
-- Versieht du mit greifst zu zu eins oder #mehr Apache #Kafka Meldung-bedienend
-  Server oder Trauben.
-- Unterstützt Schema #Standesamt.
-- Erlaubt du zu definieren mehrfache Zusammenhang Konfigurationen.
-- Schafft `Konsumenten` oder `Produzenten` Instanzen.
-- Bietet an ein `IProcessStartEventBean` jener kann sein benutzt zu starten #Ivy
-  verarbeitet jenen Arbeitsgang Apache #Kafka Meldungen #synchron oder
-  #asynchron.
-- Unterstützt du mit eine Demo Ausführung zu heruntersetzen eure Integration
-  Anstrengung.
+- Basiert auf der [Apache Kafka API](https://kafka.apache.org/34/javadoc/).
+- Bietet Ihnen Zugriff auf einen oder mehrere Apache Kafka-Server oder -Cluster
+  zur Nachrichtenverarbeitung.
+- Unterstützt Schema-Registry.
+- Ermöglicht Ihnen die Definition mehrerer Verbindungskonfigurationen.
+- Erstellt Instanzen von `Consumer` oder `Producer`.
+- Bietet ein IProcessStartEventBean- `` , das zum Starten von Ivy-Prozessen
+  verwendet werden kann, die Apache Kafka-Nachrichten synchron oder asynchron
+  verarbeiten.
+- Unterstützt Sie mit einer Demo-Implementierung, um Ihren Integrationsaufwand
+  zu reduzieren.
 
 ## Demo
 
-Die Demo versieht ein Zwiegespräch mit Knöpfe für senden Meldungen zu
-verschieden Apache #Kafka *Gegenstände*. Du darfst betreten ein `Schlüssel` und
-einen `Wert` aber es ist ok, zu benutzen ebensolchen gleichen Schlüssel und
-schätzen für mehrfach Meldungen.
+Die Demo bietet einen Dialog mit Schaltflächen zum Senden von Nachrichten an
+verschiedene Apache Kafka- *-Themen*. Sie können einen `-Schlüssel` und einen
+`-Wert` eingeben, aber es ist auch in Ordnung, denselben Schlüssel und Wert für
+mehrere Nachrichten zu verwenden.
 
-*PersonTopic* Ist ein spezieller Gegenstand #welche sendet und empfängt `Person`
-Objekte, mit einem Schema beliefert #bei einem Schema-#Standesamt. Note, dass
-diese Demo bedürft Zugang zu einem Schema-#Standesamt. Die Hafenarbeiter
-Einrichtung kann vorausgesetzt sein benutzt zu testen das Schema #Standesamt
-Integration.
+* `PersonTopic* ist ein spezielles Thema, das Person-` -Objekte sendet und
+empfängt, wobei das Schema von einer Schema-Registry bereitgestellt wird.
+Beachten Sie, dass für diese Demo Zugriff auf eine Schema-Registry erforderlich
+ist. Die bereitgestellte Docker-Konfiguration kann zum Testen der
+Schema-Registry-Integration verwendet werden.
 
-Zu sehen den Effekt von senden Meldungen du hast mehrfache Optionen:
+Um die Wirkung des Versendens von Nachrichten zu sehen, haben Sie mehrere
+Möglichkeiten:
 
-### Apache #Kafka gebietet Linie
+### Apache Kafka-Befehlszeile
 
-Starte einen Konsole Konsumenten auf die Befehl Linie von einer Maschine
-gekoppelt zu der Apache #Kafka Server und sehen Meldungen fungieren direkt auf
-der Konsole.
+Starten Sie einen Konsolen-Consumer in der Befehlszeile eines mit dem Apache
+Kafka-Server verbundenen Rechners und sehen Sie die Meldungen direkt auf der
+Konsole.
 
 ```
 kafka-console-consumer --bootstrap-server localhost:9092 --topic TopicA
 ```
-Typ `kafka-Konsole-Konsument --Hilfe` für Gebrauch.
+Geben Sie zur Verwendung „ `kafka-console-consumer --help` ” ein.
 
 ### KafkaStartEventBean
 
-Die Demo zügelt auch Beispiele von benutzen #ein `KafkaStartEventBean`. #Wann
-immer sendest du eine Meldung von die Demo #grafische Benutzeroberfläche, es
-will sein empfangen bei #man von die Demo Zuhörer (#welche #loggen jene hinein
-das Laufzeit Log).
+Die Demo enthält auch Beispiele für die Verwendung von „ `”
+KafkaStartEventBean`. Wenn Sie eine Nachricht über die Demo-GUI senden, wird
+diese von einem der Demo-Listener empfangen (die sie im Laufzeitprotokoll
+protokollieren).
 
-### Anderen Tools
+### Andere Tools
 
-Auf dem Web willst du finden Stand-#allein Tools mögen [Verschiebung
-Forscher](https://www.offsetexplorer.com) oder Web-basisbezogene Tools. Bitte
-#beachten die Schein Zustände.
+Im Internet finden Sie eigenständige Tools wie [Offset
+Explorer](https://www.offsetexplorer.com) oder webbasierte Tools. Bitte beachten
+Sie die Lizenzbedingungen.
 
 ## Einrichtung
 
-### Apache #Kafka in Hafenarbeiter
+### Apache Kafka in Docker
 
-Ob du hast nicht Zugang zu ein #existierend Apache #Kafka Server, aber hat
-Hafenarbeiter installierte, du kannst starten keine Beispiel Einrichtung
-einschließlich ein Schema #Standesamt benutzen mal unser Beispiel
-`Hafenarbeiter-abfassen.yml` Datei in das Demo Projekt.
+Wenn Sie keinen Zugriff auf einen bestehenden Apache Kafka-Server haben, aber
+Docker installiert ist, können Sie schnell eine Beispielkonfiguration
+einschließlich einer Schema-Registry starten, indem Sie unsere Beispiel-Datei „
+`“ und „docker-compose.yml“ „` “ im Demo-Projekt verwenden.
 
-Kopier diese Datei zu einem Telefonbuch auf eurer Maschine, `cd` zu jenem
-Telefonbuch und betreten den Befehl:
+Kopieren Sie diese Datei in ein Verzeichnis auf Ihrem Rechner, z. B. „ `“.
+Wechseln Sie mit dem Befehl „cd` “ in dieses Verzeichnis und geben Sie den
+folgenden Befehl ein:
 
 ```
 docker-compose up -d
 ```
 
-Hafenarbeiter will starten ein `Zoowärter` Server auf #backbordseitig `2181`,
-einen `kafka` Server auf #backbordseitig `9092` und ein `Schema-#Standesamt`
-Server auf #backbordseitig `9081`. Zu koppeln zu das kafka Server, Nutzung
-`localhost:9092` da #urladen eure Server und `http://localhost:9081` da eure
-Schema #Standesamt Server. Note, dass die Demo ist konfiguriert zu benutzen
-diese Server aus der Schachtel.
+Docker startet einen `Zookeeper-Server` auf Port `2181`, einen `Kafka-Server`
+auf Port `9092` und einen `Schema-Registry-Server` auf Port `9081`. Um eine
+Verbindung zum Kafka-Server herzustellen, verwenden Sie `localhost:9092` als
+Bootstrap-Server und `http://localhost:9081` als Schema-Registry-Server.
+Beachten Sie, dass die Demo so konfiguriert ist, dass sie diese Server sofort
+verwendet.
 
-## Gebrauch
+## Verwendung
 
-Der Anschluss war gebaut du #soviel Zugang zu geben da möglich zu dem Original
-[Apache #Kafka API](https://kafka.apache.org/34/javadoc/) #während versehend
-einige nützlichen Semantiken für Nutzung in den #Axon Efeu Umwelt.
+Der Konnektor wurde entwickelt, um Ihnen einen möglichst umfassenden Zugriff auf
+die ursprüngliche [Apache Kafka API](https://kafka.apache.org/34/javadoc/) zu
+ermöglichen und gleichzeitig einige nützliche Semantiken für die Verwendung in
+der Axon Ivy-Umgebung bereitzustellen.
 
-Alle Funktionalität ist #darlegen herein `KafkaService` oder in
-Ersatz-Arbeitsgang von diesem Anschluss. Die Anschluss Angebote Aufgaben zu
-sicher schaffen `Konsumenten`s und `Produzenten`s weiter basisbezogen global
-veriable Konfigurationen. `Produzent`s ist #zwischengespeichert und re-benutzt
-für Effizienz Gründe. `Konsument`s ist nicht #zwischengespeichert. Der beste Weg
-zu konsumieren Meldungen sind zu benutzen das #versehen `KafkaStartEventBean`
-#welche wollen benutzen einen Single `Konsumenten` für #zuhören auf ein
-Gegenstand Muster.
+Alle Funktionen sind in `KafkaService` oder in einem Unterprozess dieses
+Konnektors verfügbar. Der Konnektor bietet Funktionen zum einfachen Erstellen
+von `Consumer`s und `Producer`s basierend auf globalen Variablenkonfigurationen.
+`Producer`s werden aus Effizienzgründen zwischengespeichert und wiederverwendet.
+`Consumer`s werden nicht zwischengespeichert. Die beste Methode zum Verbrauchen
+von Nachrichten ist die Verwendung des bereitgestellten `KafkaStartEventBean`,
+das einen einzelnen `Consumer` zum Abhören eines Themenmusters verwendet.
 
 ### Senden
 
-Objekte können sein gesandt benutzen das #versehen senden sup-Arbeitsgang oder
-direkt mal benutzen den `sendet` Annehmlichkeit Aufgabe versah mal die
-`KafkaService` Da definiert mal den #Kafka API, das Resultat von *#Senden* eine
-Meldung zu den #Kafka Server kann sein überwacht in zwei Wege.
+Objekte können über den bereitgestellten Send-Sup-Prozess oder direkt über die
+vom `KafkaService bereitgestellte Komfortfunktion `send` gesendet werden.` Wie
+in der Kafka-API definiert, kann das Ergebnis von *sending* einer Nachricht an
+den Kafka-Server auf zwei Arten überwacht werden.
 
-1. Senden versieht ein `Zukunft` #welche du kannst `bekommst()` sofort
-   (#Einfrieren) oder an einem späteren Punkt #fristgemäß.
-2. Senden akzeptiert ein optionales `Rückruf` belieferte #bei dem Anrufer.
+1. Sending stellt eine `Future` bereit, die Sie `get()` sofort (blockierend)
+   oder zu einem späteren Zeitpunkt abrufen können.
+2. Beim Senden wird ein optionaler Callback „ `“ akzeptiert, der vom Aufrufer
+   bereitgestellt wird:`.
 
-Diese Anschluss Unterstützungen sowohl Optionen und wollen benutzen die
-`Rückruf` ob ihm ist nicht `Null`.
+Dieser Konnektor unterstützt beide Optionen und verwendet den Callback „ `“`,
+wenn er nicht „ `“ null` ist.
 
-Note, jene Rückrufe rennen herein #ein `Garn` geschafft bei #Kafka und will
-nicht haben Zugang zu Efeu Funktionalität. Eine Annehmlichkeit Aufgabe
-`KafkaService.ivyCallback()` Ist versehen zu schaffen Rückrufe mit greifen zu zu
-die Efeu Umwelt (#abgesehen zu Funktionalität #welche ist erzählt zu der
-gängigen Bitte da diese Bitte ist nicht gültige Außenseite von das Bitte Garn).
+Beachten Sie, dass Callbacks in einem von Kafka erstellten Thread „ `” (` )
+ausgeführt werden und keinen Zugriff auf Ivy-Funktionen haben. Eine
+Komfortfunktion „ `” (KafkaService.ivyCallback()) (` ) wird bereitgestellt, um
+Callbacks mit Zugriff auf die Ivy-Umgebung zu erstellen (mit Ausnahme von
+Funktionen, die sich auf die aktuelle Anfrage beziehen, da diese Anfrage
+außerhalb des Anfragethreads nicht gültig ist).
 
-Ob du möchtest benutzen senden Rückrufe mit Efeu Funktionalität solltest du
-wahrscheinlich gerade senden ein Signal und füllen den komplexeren Efeu in einem
-getrennten Efeu meldet Anwender. Note: Die Annehmlichkeit Aufgabe benutzt
-zurzeit eine nicht-Öffentlichkeit Efeu API.
+Wenn Sie Send-Callbacks mit Ivy-Funktionalität verwenden möchten, sollten Sie
+wahrscheinlich einfach ein Signal senden und komplexere Ivy-Aufgaben in einem
+separaten Ivy-Signal-Handler ausführen. Hinweis: Die Komfortfunktion verwendet
+derzeit eine nicht öffentliche Ivy-API.
 
 ### Empfangen
 
-Ein `KafkaStartEventBean` für Nutzung in einem Efeu *Programmheft Start* Element
-ist versehen zu anhören Gegenstand Muster und Start #Ivy verarbeitet. Wähl aus
-herein diese Bohne die *Start* Deckel von einen *Programmheft Start* Element:
+Eine „ `“ KafkaStartEventBean` zur Verwendung in einem Ivy- *-Programm start*
+-Element wird bereitgestellt, um Topic-Muster zu überwachen und Ivy-Prozesse zu
+starten. Wählen Sie diese Bean in der Registerkarte „ *“ Start* eines
+*-Programms start* -Elements aus:
 
 ![KafkaStartEventBean](images/KafkaStartEventBeanStart.png)
 
-Konfigurier herein einige zuzüglichen #Besitz die *Chefredakteur* Deckel von den
-*Programmheft Start* Element:
+Konfigurieren Sie einige zusätzliche Eigenschaften im Editor „ *“ auf der
+Registerkarte „* “ des Elements „ *Program start“*:
 
 ![KafkaStartEventBean](images/KafkaStartEventBeanEditor.png)
 
-**Gegenstand Muster** Betritt ein gültiges `java.util.regex.Muster` für den
-Gegenstand(s) zu anhören. Note, jene Wörter ohne speziell chararcters sind
-gültige Muster. So dort ist keine Notwendigkeit zu lernen eine spezielle Syntax
-zu anhören simple Gegenstand Namen. Note, jene Gegenstand Muster sind Fall
-sensibel.
+**Themenmuster** Geben Sie ein gültiges `java.util.regex.Pattern` für die zu
+überwachenden Themen ein. Beachten Sie, dass Wörter ohne Sonderzeichen gültige
+Muster sind. Es ist also nicht erforderlich, eine spezielle Syntax zu lernen, um
+einfache Themennamen zu überwachen. Beachten Sie, dass bei Themenmustern die
+Groß-/Kleinschreibung beachtet werden muss.
 
-**Synchron** #Wann ist empfangen eine Meldung, will die Bohne Wartezeit bis die
-gestartet Arbeitsgang gibt zurück Aufsicht (synchron) oder fortdauern zu
-empfangen #parallel Meldungen (asynchron)? Alle asynchronen Bohnen teilen ein
-lediges Garn Kader und die Größe von diesem Kader ist konfiguriert #global.
-Synchrone Bohnen wollen ihr eigenes Garn benutzen. In der #voreingestellt
-Konfiguration, Meldungen sind commited automatisch. Ob du möchtest Meldungen
-begehen #du, du darfst mögen schalten zu synchron Verfahren und benutzen das
-beliefert Konsumenten zu begehen die Meldung Verschiebung. Mögliche Werte sind
-`wahr` oder `falsch`. #Alles #welche #auswerten nicht zu `wahr` (in #Java
-`Aussagenlogisch.valueOf(#Aufreihen)`) wollen sein nachgedacht `falsch` #welche
-ist auch Vorgabe (asynchrones Meldung Handing).
+**Synchroner** Wenn eine Nachricht empfangen wird, wartet die Bean, bis der
+gestartete Prozess die Kontrolle zurückgibt (synchron), oder empfängt sie
+weiterhin parallel Nachrichten (asynchron)? Alle asynchronen Beans teilen sich
+einen einzigen Thread-Pool, dessen Größe global konfiguriert wird. Synchrone
+Beans verwenden ihren eigenen Thread. In der Standardkonfiguration werden
+Nachrichten automatisch bestätigt. Wenn Sie Nachrichten selbst bestätigen
+möchten, sollten Sie in den synchronen Modus wechseln und den mitgelieferten
+Consumer verwenden, um den Nachrichten-Offset zu bestätigen. Mögliche Werte sind
+`true` oder `false`. Alles, was nicht zu `true` (in Java
+`Boolean.valueOf(String)`) ausgewertet wird, wird als `false` betrachtet, was
+auch die Standardeinstellung ist (asynchrone Nachrichtenverarbeitung).
 
-**Konfiguration Name** Der Name von einer Gruppe von global Variablen unterhalb
-diesen Pfad zu benutzen da #Besitz für Satzbau von einen `Konsumenten`.
+**Konfigurationsname** Der Name einer Gruppe globaler Variablen unter diesem
+Pfad, die als Eigenschaften für die Erstellung eines `Consumer` verwendet werden
+sollen.
 
-#### #Zugreifen #der #Daten
+#### Zugriff auf die Daten
 
-Wann eine Meldung ist empfangen, der Arbeitsgang Start will sein gefeuert und
-die folgenden Variablen in eure #Daten Klasse will sein gesetzt zu den Werten
-empfangen. Note, dass eure #Daten-Klasse muss diese mit dem richtigen Typ
-versehen:
+Wenn eine Nachricht empfangen wird, wird der Prozessstart ausgelöst und die
+folgenden Variablen in Ihrer Datenklasse werden auf die empfangenen Werte
+gesetzt. Beachten Sie, dass Ihre Datenklasse diese mit dem richtigen Typ
+bereitstellen muss:
 
-**Konsument** dies ist der `Konsument` #welche empfangen die Meldung. Es kann
-sein benutzt zu begehen eine Meldung, beispielsweise. Der Typ von der
-`Konsument` Feld muss sein `org.apache.kafka.Kunden.Konsument.Konsument`.
+**consumer** Dies ist der `Consumer`, der die Nachricht empfangen hat. Er kann
+beispielsweise zum Committen einer Nachricht verwendet werden. Der Typ des
+Feldes `consumer` muss `org.apache.kafka.clients.consumer.Consumer` sein.
 
-**consumerRecord** Dies ist das `ConsumerRecord` empfangen #bei dem Konsumenten.
-Es darf zügeln ein `Schlüssel` und einen `Wert` und gibt du greifst zu zu den
-`Gegenstand` und `Verschiebung`. Note, dass die `consumerRecord` liefert an
-`Schlüssel` und `Wert` da `Objekt` Typ. Ob du konfiguriertest einen Spezial
-#Kafka Deserializer du willst müssen entledigen manuell die anerkannten Objekte
-zu dem richtigen Typ. Der Typ von der `consumerRecord` Feld muss sein
-`org.apache.kafka.Kunden.Konsument.ConsumerRecord`.
+**consumerRecord** Dies ist das `ConsumerRecord`, das vom Verbraucher empfangen
+wurde. Es kann einen `Schlüssel` und einen `Wert` enthalten und ermöglicht Ihnen
+den Zugriff auf das `Thema` und den `Offset`. Beachten Sie, dass das
+`consumerRecord` den `Schlüssel` und den `Wert` als `Objekt` Typ liefert. Wenn
+Sie einen speziellen Kafka-Deserializer konfiguriert haben, müssen Sie die
+empfangenen Objekte manuell in den richtigen Typ umwandeln. Der Typ des
+`consumerRecord` Feldes muss `org.apache.kafka.clients.consumer.ConsumerRecord`
+sein.
 
-#### #Zurückgeben Aufsicht nach bedienen eine Meldung
+#### Kontrolle nach Bearbeitung einer Nachricht zurückgeben
 
-Wann ein Garn (verarbeite) ist bedienen eine anerkannte Meldung, es will sein
-belegt bis die Arbeitsgang Enden oder den Task ist unterbrochen. Es ist gute
-Fahrpraxis zu vermeiden blocken #lange einen Arbeitsgang. Ob du brauchst zu tun
-komplex, Zeit-konsumierend Operationen, #nachdenken senden ein Signal zu starten
-anderen Arbeitsgang zu tun diesen arbeiten
+Wenn ein Thread (Prozess) eine empfangene Nachricht verarbeitet, ist er so lange
+beschäftigt, bis der Prozess beendet oder die Aufgabe unterbrochen wird. Es
+empfiehlt sich, eine lange Blockierung eines Prozesses zu vermeiden. Wenn Sie
+komplexe, zeitaufwändige Vorgänge ausführen müssen, sollten Sie ein Signal
+senden, um einen anderen Prozess zu starten, der diese Aufgabe übernimmt.
 
-Note, jener `Konsument`s Henkel Meldung queueing, so wollen keine Meldungen sein
-gefehlt, sogar ob alle Garne sind zurzeit fleißig. #Sowie ist ein Garn frei, die
-nächste Meldung will sein bedient.
+Beachten Sie, dass `Consumer`die Nachrichtenwarteschlange verarbeiten, sodass
+keine Nachrichten verloren gehen, selbst wenn alle Threads gerade ausgelastet
+sind. Sobald ein Thread frei ist, wird die nächste Nachricht verarbeitet.
 
-### #Senden und empfangend Objekte folgend ein Schema (benutzend das Schema #Standesamt)
+### Senden und Empfangen von Objekten nach einem Schema (unter Verwendung der Schema-Registrierung)
 
-Dieser Anschluss auch sendend Unterstützungen und empfangend Objekte definiert
-in einem Plan angemeldet an ein Schema #Standesamt Server. Zurzeit, das AVRO
-Plan ist unterstützt direkt #bei dem Anschluss. Einrichtung von so kann eine
-Konfiguration sein gefunden [auf dem
-Internet](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html)
-und dem brauchte #Besitz können sein definiert da global Variablen genauso #was
-nicht-schematisches #Senden und Empfang.
+Dieser Konnektor unterstützt auch das Senden und Empfangen von Objekten, die in
+einem bei einem Schema-Registrierungsserver registrierten Schema definiert sind.
+Derzeit wird das AVRO-Schema direkt vom Konnektor unterstützt. Die Einrichtung
+einer solchen Konfiguration finden Sie [im
+Internet](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html),
+und die erforderlichen Eigenschaften können wie beim nicht schematischen Senden
+und Empfangen als globale Variablen definiert werden.
 
-Zu arbeiten mit Schemata, schafft ein Schema (#z.B. `Person.avsc`) Und gelassen
-Experten schafft #der #Java #eingruppieren für jenes Schema. Das `pom.xml` Datei
-von das Demo Projekt zeigt ein Beispiel von rennen die Quelle Erzeugung. Quelle
-ist generiert mal die Statur starten mit die `generiert-avro` Profil:
+Um mit Schemata zu arbeiten, erstellen Sie ein Schema (z. B. `person.avsc`) und
+lassen Sie Maven die Java-Klassen für dieses Schema erstellen. Die Datei
+`pom.xml` des Demoprojekts zeigt ein Beispiel für die Ausführung der
+Quellgenerierung. Die Quelle wird generiert, indem der Build mit dem Profil
+`generate-avro` gestartet wird:
 
 ```
 mvn generate-sources -Pgenerate-avro
 ```
 
-Ob eure Schema #Standesamt ist gesetzt-bis automatisch akzeptieren ein neues
-Schema, du kannst direkt Objekte zu #Kafka senden.
+Wenn Ihre Schema-Registry so eingerichtet ist, dass sie automatisch ein neues
+Schema akzeptiert, können Sie Objekte direkt an Kafka senden.
 
-#### Empfangend GenericData Schallplatten
+#### Empfang von GenericData-Datensätzen
 
-Ob das globales `#Spezifikum.avro.Leser` ist gesetzt zu `falsch`, AVRO will
-deserialize Meldungen hinein `GenericData.Schallplatte`s. Dies ist ein typisches
-Objekt Opfergabe Annehmlichkeit Methoden zu zugreifen Felder, Bereiche oder
-gleichmäßige #Ersatz-Schallplatten sicher. Für simpel Objekte, dieses Konzept
-ist Kuhle passte.
+Wenn die globale Variable „ `specific.avro.reader` ” auf „ `false` ” gesetzt
+ist, deserialisiert AVRO Nachrichten in „ `GenericData.Record`s”. Dabei handelt
+es sich um ein generisches Objekt, das praktische Methoden für den einfachen
+Zugriff auf Felder, Arrays oder sogar Unterdatensätze bietet. Für einfache
+Objekte ist dieser Ansatz gut geeignet.
 
-#### Empfang #Java wendet ein
+#### Empfangen von Java-Objekten
 
-Ob das globales `#Spezifikum.avro.Leser` ist gesetzt zu `wahr`, AVRO will
-deserialize Meldungen hinein Objekte geschafft bei die Experten Stufe beschrieb
-eher. Dort ist ein Vorbehalt doch. Die Klassen zurückgekehrt müssen sein herein
-verfügbar die classpath, #wann ist empfangen eine Meldung.
+Wenn die globale Variable „ `specific.avro.reader` ” auf „ `true` ” gesetzt ist,
+deserialisiert AVRO Nachrichten in Objekte, die durch den zuvor beschriebenen
+Maven-Schritt erstellt wurden. Es gibt jedoch eine Einschränkung. Die
+zurückgegebenen Klassen müssen im Klassenpfad verfügbar sein, wenn eine
+Nachricht empfangen wird.
 
-#Technisch, ob eine Klasse ist benutzt erstmals in einem Ersatz-Arbeitsgang von
-dem Anschluss (#d.h. für senden) und nachher möchtest du deserialize hinein
-diese Klasse, es will nicht sein gefunden nochmal. Dies ist punkto den #Kafka
-caching Mechanismus und Efeu #Spezifikum classloader bedienen von Projekte.
+Technisch gesehen wird eine Klasse, die zum ersten Mal in einem Unterprozess des
+Konnektors (d. h. zum Senden) verwendet wird und später in diese Klasse
+deserialisiert werden soll, nicht wieder gefunden. Dies liegt am
+Caching-Mechanismus von Kafka und der Ivy-spezifischen Classloader-Behandlung
+von Projekten.
 
-Da eine Lösung, ob du erfährst das Problem für #man von euren Klassen, Schalter
-zu #der Annehmlichkeit #Java holt ab senden oder schaffen einen
-Ersatz-Arbeitsgang in eurem eigenen Projekt. Ein Beispiel für senden und
-empfangend Objekte sind gezeigt in das Demo Projekt.
+Als Lösung können Sie, wenn das Problem bei einer Ihrer Klassen auftritt, zum
+praktischen Java-Aufruf zum Senden wechseln oder einen Unterprozess in Ihrem
+eigenen Projekt erstellen. Ein Beispiel für das Senden und Empfangen von
+Objekten finden Sie im Demo-Projekt.
 
-### Kreation von Produzent und Konsument
+### Erstellung von Produzent und Konsument
 
-In einige Komplex Umwelten (und so auch in #Ivy) #Kafka ist manchmal nicht
-#imstande zu zugreifen die richtige Klasse #Lader zu schaffen `Konsumenten`s und
-`Produzenten`s. Dieser Anschluss versieht Annehmlichkeit Aufgaben
-`Konsumenten()` und `Produzenten()` zu arbeiten herein um dieses Problem das
-`KafkaService` #eingruppieren und kann auch sein benutzt zu schaffen #Spezifikum
-`Konsumenten`s und `Produzenten`s nicht #unter Kontrolle #bei dem Anschluss
-caching Mechanismus direkt via einen Apparat von #Besitz.
+In einigen komplexen Umgebungen (und somit auch in Ivy) kann Kafka manchmal
+nicht auf den richtigen Klassenlader zugreifen, um `Consumer`s und `Producer`s
+zu erstellen. Dieser Konnektor bietet Komfortfunktionen `consumer()` und
+`producer()`, um dieses Problem in der Klasse `KafkaService` zu umgehen, und
+kann auch verwendet werden, um bestimmte `Consumer`s und `Producer`s zu
+erstellen, die nicht direkt vom Caching-Mechanismus des Konnektors kontrolliert
+werden, und zwar über eine Reihe von Eigenschaften.
 
-Außerdem das `KafkaStartEventBean` akzeptiert den Namen von einen `Konsumenten`
-Zulieferer erlaubt jener die Nutzung von `Konsumenten`s geschafft in einigem
-verschiedenen Weg.
+Zusätzlich akzeptiert die `KafkaStartEventBean` den Namen eines `Consumer`
+Lieferanten, der die Verwendung von `Consumer`ermöglicht, die auf eine andere
+Weise erstellt wurden.
 
 ### Konfiguration
 
-> [!BEACHTE] Den variablen Pfad `kafka-Anschluss` gewechselt zu `kafkaConnector`
-> von Version 12.0.2.
+> [!HINWEIS] Der variable Pfad `kafka-connector` wurde ab Version 12.0.2 in
+> `kafkaConnector` geändert.
 
-Konfiguration kann sein getan in global Variablen #wo #welche simpel inheritence
-Mechanismus ist versehen. Alle #Kafka Konfiguration ist gelagert unten die
-`kafkaConnector` globale Variable. An diesem Level solltest du konfigurieren die
-folgenden globalen Lagen.
+Die Konfiguration kann in globalen Variablen vorgenommen werden, für die ein
+einfacher Vererbungsmechanismus bereitgestellt wird. Die gesamte
+Kafka-Konfiguration wird unterhalb der globalen Variablen „ `” „kafkaConnector”
+„` ” gespeichert. Auf dieser Ebene sollten Sie die folgenden globalen
+Einstellungen konfigurieren.
 
-**workerPoolSize** Nummer von Arbeiter Garne geteilt #bei alle Konsumenten zu
-bedienen #parallel #Kafka Meldungen.
+**workerPoolSize** Anzahl der Worker-Threads, die von allen Verbrauchern
+gemeinsam genutzt werden, um Kafka-Nachrichten parallel zu verarbeiten.
 
-**pollTimeoutMs** Konsument #Umfragen misst herein ms. Note, jene Meldungen sind
-immer sofort empfangen. Dieser Zeitüberschreitung Wert definiert das Polle
-Intervall. Auch will es sein die #höchster Zeit brauchte zu automatisch
-herausfinden Konfiguration Änderungen (Änderung von `configId`).
+**pollTimeoutMs** Abfragezeit für Verbraucher in ms. Beachten Sie, dass
+Nachrichten immer sofort empfangen werden. Dieser Timeout-Wert definiert das
+Abfrageintervall. Außerdem ist dies die maximale Zeit, die benötigt wird, um
+Konfigurationsänderungen automatisch zu erkennen (Änderung von `configId`).
 
-#### Besitz Blöcke und inheritence
+#### Eigenschaftsblöcke und Vererbung
 
-Die Konfiguration Unterstützungen mehrfach-Instanzen. Es zügelt Besitz Blöcke
-unterhalb Konfiguration Namen. Beispielsweise, die Lagen zügelten in dem Block
-`kafkaConnector.localhost` Wollen sein benutzt, #wann ein prodcuer ist geschafft
-mit `KafkaService.Bekomm().createProducer("localhost")`.
+Die Konfiguration unterstützt mehrere Instanzen. Sie enthält Eigenschaftsblöcke
+unterhalb der Konfigurationsnamen. Beispielsweise werden die Einstellungen im
+Block `kafkaConnector.localhost` verwendet, wenn ein Produzent mit
+`KafkaService.get().createProducer("localhost")` erstellt wird.
 
-Alle Lagen (außer die Lage `erbt`) unterhalb diesen Namen will sein eingesammelt
-hinein einen `#Besitz` wenden ein und abgespielt zu dem Erbauer von den #Kafka
-Konsumenten oder Produzenten Objekte.
+Alle Einstellungen (mit Ausnahme der Einstellung „ `inherit` ”) unter diesem
+Namen werden in einem „ `Properties` ”-Objekt gesammelt und an den Konstruktor
+der Kafka-Consumer- oder -Producer-Objekte übergeben.
 
-Die spezielle Lage `erbt` kann sein benutzt zu #referenzieren anderen
-Konfiguration Block jener kann sein benutzt und overridden. (Inheritence Ist
-rekursiv und wollen überprüfen für kränklich Loopings.) Der Anschluss definiert
-ein `defaultConfig` Block mit einige Anger Lagen. Es macht gewöhnlich Sinn zu
-erben eure Konfiguration von diesem Block. Für ein Beispiel von einer simplen
-Konfiguration #welche erbt von der `defaultConfig` Konfiguration, habe eine
-ansehen das Demo Projekt!
+Die spezielle Einstellung `inherit` kann verwendet werden, um auf einen anderen
+Konfigurationsblock zu verweisen, der verwendet und überschrieben werden kann.
+(Die Vererbung ist rekursiv und überprüft auf ungültige Schleifen.) Der
+Konnektor definiert einen `defaultConfig` Block mit einigen allgemeinen
+Einstellungen. In der Regel ist es sinnvoll, Ihre Konfiguration von diesem Block
+zu übernehmen. Ein Beispiel für eine einfache Konfiguration, die von der
+`defaultConfig` Konfiguration übernommen wird, finden Sie im Demo-Projekt!
 
-Die spezielle Lage `configId` ist benutzt zu herausfinden Änderungen in der
-Konfiguration. Der effektive Wert gelegt dort bedeutet nicht, es kann eine
-simple Nummer oder einiger Text sein oder sogar ein #Zeitstempel. #Wann immer
-diese Wert Änderungen, alle Produzenten und Konsumenten angegangen #bei der
-Änderung will sein wiedererschafft automatisch die neue Konfiguration zu
-wiedergeben. Produzenten wollen reagieren an die #nächste senden, Konsumenten
-wollen reagieren #wann ist empfangen eine neue Meldung (bei der alten
-Konfiguration) oder automatisch, #wann immer geschieht eine neue Polle (#welche
-ist definiert mal `pollTimeoutMs`). Note, dass die `configId` kann sein
-inheritted, so wechselnd es für eine ledige Konfiguration will nur Produzenten
-und Konsumenten für diese spezifische Konfiguration verbessern #während
-verbessernd die `defaultConfig` will alle Produzenten und Konsumenten
-verbessern.
+Die spezielle Einstellung `configId` wird verwendet, um Änderungen in der
+Konfiguration zu erkennen. Der dort eingegebene Wert spielt keine Rolle, es kann
+sich um eine einfache Zahl, einen Text oder sogar einen Zeitstempel handeln.
+Immer wenn sich dieser Wert ändert, werden alle von der Änderung betroffenen
+Produzenten und Konsumenten automatisch neu erstellt, um die neue Konfiguration
+widerzuspiegeln. Produzenten reagieren beim nächsten Senden, Konsumenten
+reagieren, wenn eine neue Nachricht empfangen wird (durch die alte
+Konfiguration) oder automatisch, wenn eine neue Abfrage erfolgt (die durch
+`pollTimeoutMs` definiert ist). Beachten Sie, dass die `configId` vererbt werden
+kann, sodass eine Änderung für eine einzelne Konfiguration nur die Produzenten
+und Konsumenten für diese spezifische Konfiguration aktualisiert, während die
+Aktualisierung der `defaultConfig` alle Produzenten und Konsumenten
+aktualisiert.
