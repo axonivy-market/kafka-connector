@@ -24,8 +24,7 @@ Dieser Konnektor:
 - Bietet ein IProcessStartEventBean- `` , das zum Starten von Ivy-Prozessen
   verwendet werden kann, die Apache Kafka-Nachrichten synchron oder asynchron
   verarbeiten.
-- Unterstützt Sie mit einer Demo-Implementierung, um Ihren Integrationsaufwand
-  zu reduzieren.
+- Bietet eine Demo Implementierung.
 
 ## Demo
 
@@ -67,7 +66,7 @@ Im Internet finden Sie eigenständige Tools wie [Offset
 Explorer](https://www.offsetexplorer.com) oder webbasierte Tools. Bitte beachten
 Sie die Lizenzbedingungen.
 
-## Einrichtung
+## Setup
 
 ### Apache Kafka in Docker
 
