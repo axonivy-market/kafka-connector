@@ -244,6 +244,6 @@ does not matter, it can be a simple number or some text or even a timestamp. Whe
 all producers and consumers affected by the change will be re-created automatically to reflect the new
 configuration. Producers will react at the next send, consumers will react when a new message is received
 (by the old configuration) or automatically, whenever a new poll occurs (which is defined by `pollTimeoutMs`).
-Note, that the `configId` can be inheritted, so changing it for a single configuration will only update
+Note, that the `configId` can be inherited, so changing it for a single configuration will only update
 producers and consumers for this specific configuration while updating the `defaultConfig` will update all
 producers and consumers.
