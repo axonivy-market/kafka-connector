@@ -73,7 +73,7 @@ useful semantics for use in the Axon Ivy environment.
 
 All functionality is exposed in `KafkaService` or in sub-process of this connector.
 The connector offers functions to easily create `Consumer`s and `Producer`s based
-on global veriable configurations. `Producer`s are cached and re-used for efficiency
+on global variable configurations. `Producer`s are cached and re-used for efficiency
 reasons. `Consumer`s are not cached. The best way to consume messages is to use
 the provided `KafkaStartEventBean` which will use a single `Consumer` for listening on
 a topic pattern.
@@ -112,14 +112,14 @@ Configure some additional properties in the *Editor* tab of the *Program start* 
 
 **Topic Pattern**
 Enter a valid `java.util.regex.Pattern` for the topic(s) to listen to. Note, that words without
-special chararcters are valid patterns. So there is no need to learn a special syntax to listen
+special characters are valid patterns. So there is no need to learn a special syntax to listen
 to simple topic names. Note, that topic patterns are case sensitive.
 
 **Synchronous**
 When a message is received, will the bean wait until the started process gives back control
 (synchronous) or continue to receive messages in parallel (asynchronous)? All asynchronous
 beans share a single thread pool and the size of this pool is configured globally. Synchronous
-beans will use their own thread. In the default configuration, messages are commited automatically.
+beans will use their own thread. In the default configuration, messages are committed automatically.
 If you want to commit messages yourself, you might want to switch to synchronous mode and
 use the supplied consumer to commit the message offset. Possible values are `true` or `false`.
 Everything which does not evaluate to `true` (in Java `Boolean.valueOf(String)`) will be considered
@@ -216,7 +216,7 @@ use of `Consumer`s created in some different way.
 > [!NOTE]
 > The variable path `kafka-connector` changed to `kafkaConnector` from version 12.0.2.
 
-Configuration can be done in global variables where some simple inheritence mechanism
+Configuration can be done in global variables where some simple inheritance mechanism
 is provided. All Kafka configuration is stored below the `kafkaConnector` global
 variable. At this level you should configure the following global settings.
 
@@ -226,15 +226,15 @@ variable. At this level you should configure the following global settings.
 This timeout value defines the poll interval. Also it will be the maximum time needed to automatically
 detect configuration changes (change of `configId`).
 
-#### Property blocks and inheritence
+#### Property blocks and inheritance
 
-The configuration supports multiple-instances. It contains property blocks below configuration names. For example, the settings contained in the block `kafkaConnector.localhost` will be used, when a prodcuer is created with `KafkaService.get().createProducer("localhost")`.
+The configuration supports multiple-instances. It contains property blocks below configuration names. For example, the settings contained in the block `kafkaConnector.localhost` will be used, when a producer is created with `KafkaService.get().createProducer("localhost")`.
 
 All settings (except the setting `inherit`) below this name will be collected into a `Properties` object
 and passed to the constructor of the Kafka consumer or producer objects.
 
 The special setting `inherit` can be used to reference another configuration block that can be used and
-overridden. (Inheritence is recursive and will check for invalid loops.) The connector defines
+overridden. (Inheritance is recursive and will check for invalid loops.) The connector defines
 a `defaultConfig` block with some common settings. It usually makes sense to inherit your configuration from 
 this block. For an example of a simple configuration which inherits from the `defaultConfig` configuration,
 have a look at the demo project!
