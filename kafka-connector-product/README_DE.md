@@ -97,13 +97,12 @@ die ursprüngliche [Apache Kafka API](https://kafka.apache.org/34/javadoc/) zu
 ermöglichen und gleichzeitig einige nützliche Semantiken für die Verwendung in
 der Axon Ivy-Umgebung bereitzustellen.
 
-Alle Funktionen sind in `KafkaService` oder in einem Unterprozess dieses
-Konnektors verfügbar. Der Konnektor bietet Funktionen zum einfachen Erstellen
-von `Consumer`s und `Producer`s basierend auf globalen Variablenkonfigurationen.
-`Producer`s werden aus Effizienzgründen zwischengespeichert und wiederverwendet.
-`Consumer`s werden nicht zwischengespeichert. Die beste Methode zum Verbrauchen
-von Nachrichten ist die Verwendung des bereitgestellten `KafkaStartEventBean`,
-das einen einzelnen `Consumer` zum Abhören eines Themenmusters verwendet.
+All functionality is exposed in `KafkaService` or in sub-process of this
+connector. The connector offers functions to easily create `Consumer`s and
+`Producer`s based on global variable configurations. `Producer`s are cached and
+re-used for efficiency reasons. `Consumer`s are not cached. The best way to
+consume messages is to use the provided `KafkaStartEventBean` which will use a
+single `Consumer` for listening on a topic pattern.
 
 ### Senden
 
@@ -146,23 +145,21 @@ Registerkarte „* “ des Elements „ *Program start“*:
 
 ![KafkaStartEventBean](images/KafkaStartEventBeanEditor.png)
 
-**Themenmuster** Geben Sie ein gültiges `java.util.regex.Pattern` für die zu
-überwachenden Themen ein. Beachten Sie, dass Wörter ohne Sonderzeichen gültige
-Muster sind. Es ist also nicht erforderlich, eine spezielle Syntax zu lernen, um
-einfache Themennamen zu überwachen. Beachten Sie, dass bei Themenmustern die
-Groß-/Kleinschreibung beachtet werden muss.
+**Topic Pattern** Enter a valid `java.util.regex.Pattern` for the topic(s) to
+listen to. Note, that words without special characters are valid patterns. So
+there is no need to learn a special syntax to listen to simple topic names.
+Note, that topic patterns are case sensitive.
 
-**Synchroner** Wenn eine Nachricht empfangen wird, wartet die Bean, bis der
-gestartete Prozess die Kontrolle zurückgibt (synchron), oder empfängt sie
-weiterhin parallel Nachrichten (asynchron)? Alle asynchronen Beans teilen sich
-einen einzigen Thread-Pool, dessen Größe global konfiguriert wird. Synchrone
-Beans verwenden ihren eigenen Thread. In der Standardkonfiguration werden
-Nachrichten automatisch bestätigt. Wenn Sie Nachrichten selbst bestätigen
-möchten, sollten Sie in den synchronen Modus wechseln und den mitgelieferten
-Consumer verwenden, um den Nachrichten-Offset zu bestätigen. Mögliche Werte sind
-`true` oder `false`. Alles, was nicht zu `true` (in Java
-`Boolean.valueOf(String)`) ausgewertet wird, wird als `false` betrachtet, was
-auch die Standardeinstellung ist (asynchrone Nachrichtenverarbeitung).
+**Synchronous** When a message is received, will the bean wait until the started
+process gives back control (synchronous) or continue to receive messages in
+parallel (asynchronous)? All asynchronous beans share a single thread pool and
+the size of this pool is configured globally. Synchronous beans will use their
+own thread. In the default configuration, messages are committed automatically.
+If you want to commit messages yourself, you might want to switch to synchronous
+mode and use the supplied consumer to commit the message offset. Possible values
+are `true` or `false`. Everything which does not evaluate to `true` (in Java
+`Boolean.valueOf(String)`) will be considered `false` which is also default
+(asynchronous message handling).
 
 **Konfigurationsname** Der Name einer Gruppe globaler Variablen unter diesem
 Pfad, die als Eigenschaften für die Erstellung eines `Consumer` verwendet werden
@@ -269,11 +266,10 @@ Weise erstellt wurden.
 > [!HINWEIS] Der variable Pfad `kafka-connector` wurde ab Version 12.0.2 in
 > `kafkaConnector` geändert.
 
-Die Konfiguration kann in globalen Variablen vorgenommen werden, für die ein
-einfacher Vererbungsmechanismus bereitgestellt wird. Die gesamte
-Kafka-Konfiguration wird unterhalb der globalen Variablen „ `” „kafkaConnector”
-„` ” gespeichert. Auf dieser Ebene sollten Sie die folgenden globalen
-Einstellungen konfigurieren.
+Configuration can be done in global variables where some simple inheritance
+mechanism is provided. All Kafka configuration is stored below the
+`kafkaConnector` global variable. At this level you should configure the
+following global settings.
 
 **workerPoolSize** Anzahl der Worker-Threads, die von allen Verbrauchern
 gemeinsam genutzt werden, um Kafka-Nachrichten parallel zu verarbeiten.
@@ -283,35 +279,31 @@ Nachrichten immer sofort empfangen werden. Dieser Timeout-Wert definiert das
 Abfrageintervall. Außerdem ist dies die maximale Zeit, die benötigt wird, um
 Konfigurationsänderungen automatisch zu erkennen (Änderung von `configId`).
 
-#### Eigenschaftsblöcke und Vererbung
+#### Property blocks and inheritance
 
-Die Konfiguration unterstützt mehrere Instanzen. Sie enthält Eigenschaftsblöcke
-unterhalb der Konfigurationsnamen. Beispielsweise werden die Einstellungen im
-Block `kafkaConnector.localhost` verwendet, wenn ein Produzent mit
-`KafkaService.get().createProducer("localhost")` erstellt wird.
+The configuration supports multiple-instances. It contains property blocks below
+configuration names. For example, the settings contained in the block
+`kafkaConnector.localhost` will be used, when a producer is created with
+`KafkaService.get().createProducer("localhost")`.
 
 Alle Einstellungen (mit Ausnahme der Einstellung „ `inherit` ”) unter diesem
 Namen werden in einem „ `Properties` ”-Objekt gesammelt und an den Konstruktor
 der Kafka-Consumer- oder -Producer-Objekte übergeben.
 
-Die spezielle Einstellung `inherit` kann verwendet werden, um auf einen anderen
-Konfigurationsblock zu verweisen, der verwendet und überschrieben werden kann.
-(Die Vererbung ist rekursiv und überprüft auf ungültige Schleifen.) Der
-Konnektor definiert einen `defaultConfig` Block mit einigen allgemeinen
-Einstellungen. In der Regel ist es sinnvoll, Ihre Konfiguration von diesem Block
-zu übernehmen. Ein Beispiel für eine einfache Konfiguration, die von der
-`defaultConfig` Konfiguration übernommen wird, finden Sie im Demo-Projekt!
+The special setting `inherit` can be used to reference another configuration
+block that can be used and overridden. (Inheritance is recursive and will check
+for invalid loops.) The connector defines a `defaultConfig` block with some
+common settings. It usually makes sense to inherit your configuration from this
+block. For an example of a simple configuration which inherits from the
+`defaultConfig` configuration, have a look at the demo project!
 
-Die spezielle Einstellung `configId` wird verwendet, um Änderungen in der
-Konfiguration zu erkennen. Der dort eingegebene Wert spielt keine Rolle, es kann
-sich um eine einfache Zahl, einen Text oder sogar einen Zeitstempel handeln.
-Immer wenn sich dieser Wert ändert, werden alle von der Änderung betroffenen
-Produzenten und Konsumenten automatisch neu erstellt, um die neue Konfiguration
-widerzuspiegeln. Produzenten reagieren beim nächsten Senden, Konsumenten
-reagieren, wenn eine neue Nachricht empfangen wird (durch die alte
-Konfiguration) oder automatisch, wenn eine neue Abfrage erfolgt (die durch
-`pollTimeoutMs` definiert ist). Beachten Sie, dass die `configId` vererbt werden
-kann, sodass eine Änderung für eine einzelne Konfiguration nur die Produzenten
-und Konsumenten für diese spezifische Konfiguration aktualisiert, während die
-Aktualisierung der `defaultConfig` alle Produzenten und Konsumenten
-aktualisiert.
+The special setting `configId` is used to detect changes in the configuration.
+The actual value put there does not matter, it can be a simple number or some
+text or even a timestamp. Whenever this value changes, all producers and
+consumers affected by the change will be re-created automatically to reflect the
+new configuration. Producers will react at the next send, consumers will react
+when a new message is received (by the old configuration) or automatically,
+whenever a new poll occurs (which is defined by `pollTimeoutMs`). Note, that the
+`configId` can be inherited, so changing it for a single configuration will only
+update producers and consumers for this specific configuration while updating
+the `defaultConfig` will update all producers and consumers.
