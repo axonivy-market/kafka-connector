@@ -24,6 +24,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.kafka.clients.consumer.CloseOptions;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerGroupMetadata;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
@@ -32,11 +33,13 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
+import org.apache.kafka.clients.consumer.SubscriptionPattern;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.Uuid;
+import org.apache.kafka.common.metrics.KafkaMetric;
 
 public class ProjectAwareKafkaConsumer<K, V> implements Consumer<K, V> {
 	KafkaConsumer<K, V> delegate;
@@ -99,12 +102,6 @@ public class ProjectAwareKafkaConsumer<K, V> implements Consumer<K, V> {
 	@Override
 	public void assign(Collection<TopicPartition> partitions) {
 		delegate.assign(partitions);
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public ConsumerRecords<K, V> poll(long timeoutMs) {
-		return KafkaService.get().executeWithProjectClassLoader(() -> delegate.poll(timeoutMs));
 	}
 
 	@Override
@@ -175,18 +172,6 @@ public class ProjectAwareKafkaConsumer<K, V> implements Consumer<K, V> {
 	@Override
 	public long position(TopicPartition partition, Duration timeout) {
 		return delegate.position(partition, timeout);
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public OffsetAndMetadata committed(TopicPartition partition) {
-		return delegate.committed(partition);
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public OffsetAndMetadata committed(TopicPartition partition, Duration timeout) {
-		return delegate.committed(partition, timeout);
 	}
 
 	@Override
@@ -308,5 +293,30 @@ public class ProjectAwareKafkaConsumer<K, V> implements Consumer<K, V> {
 	@Override
 	public void wakeup() {
 		delegate.wakeup();
+	}
+
+	@Override
+	public void close(CloseOptions option) {
+		delegate.close(option);
+	}
+
+	@Override
+	public void registerMetricForSubscription(KafkaMetric metric) {
+		delegate.registerMetricForSubscription(metric);
+	}
+
+	@Override
+	public void subscribe(SubscriptionPattern pattern) {
+		delegate.subscribe(pattern);
+	}
+
+	@Override
+	public void subscribe(SubscriptionPattern pattern, ConsumerRebalanceListener callback) {
+		delegate.subscribe(pattern, callback);
+	}
+
+	@Override
+	public void unregisterMetricFromSubscription(KafkaMetric metric) {
+		delegate.unregisterMetricFromSubscription(metric);
 	}
 }

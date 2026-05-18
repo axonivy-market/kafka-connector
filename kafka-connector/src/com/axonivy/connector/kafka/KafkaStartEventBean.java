@@ -16,7 +16,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
-import org.eclipse.core.runtime.IProgressMonitor;
 
 import ch.ivyteam.ivy.process.eventstart.AbstractProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBean;
@@ -51,7 +50,7 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 	}
 
 	@Override
-	public synchronized void start(IProgressMonitor monitor) throws ServiceException {
+	public synchronized void start() throws ServiceException {
 		var configurationName = getKafkaConfigurationName();
 
 		log().debug("Starting Kafka consumer for topic pattern: ''{0}'' and configuration name: ''{1}''",
@@ -69,14 +68,13 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 			}
 		}
 		reader.start(configurationName, topicConsumerSupplier, isSynchronous());
-		super.start(monitor);
 		log().info("Started KafkaStartEventBean.");
 	}
 
 	@Override
-	public synchronized void stop(IProgressMonitor monitor) throws ServiceException {
+	public synchronized void stop() throws ServiceException {
 		reader.stop();
-		super.stop(monitor);
+		super.stop();
 		log().info("Stopped KafkaStartEventBean.");
 	}
 
