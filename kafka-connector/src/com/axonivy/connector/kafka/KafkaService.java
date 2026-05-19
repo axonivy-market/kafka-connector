@@ -20,7 +20,6 @@ import org.apache.kafka.common.utils.Utils;
 import ch.ivyteam.ivy.application.IProcessModelVersion;
 import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.ivy.project.IIvyProject;
-import ch.ivyteam.ivy.restricted.IvyThreadLocalNameConstants;
 import ch.ivyteam.util.threadcontext.IvyThreadContext;
 
 /**
