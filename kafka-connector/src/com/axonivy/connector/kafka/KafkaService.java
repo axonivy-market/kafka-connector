@@ -29,6 +29,7 @@ public class KafkaService {
 	private static final String WORKER_POOL_SIZE = "workerPoolSize";
 	private static final String POLL_TIMEOUT_MS = "pollTimeoutMs";
 	private static final String TOPIC_CONSUMER_SUPPLIER = "topicConsumerSupplier";
+	private static final String SERVLET_REQUEST = "servletRequest";
 	private static KafkaService INSTANCE = new KafkaService();
 
 	private KafkaService() {
@@ -296,7 +297,7 @@ public class KafkaService {
 		protected IvyCallback(Callback callback) {
 			// Save most of the Ivy context but not the servlet request. It will be invalid and every access will throw an
 			// IllegalStateException, e.g. Ivy.log() which adds data from the servlet request to the log context.
-			this.memento = IvyThreadContext.saveToMemento(List.of(IvyThreadLocalNameConstants.SERVLET_REQUEST));
+			this.memento = IvyThreadContext.saveToMemento(List.of(SERVLET_REQUEST));
 			this.callback = callback;
 		}
 
