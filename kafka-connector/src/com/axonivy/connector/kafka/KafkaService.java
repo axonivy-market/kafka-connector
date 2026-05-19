@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import org.apache.avro.generic.GenericData;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.Callback;
@@ -19,13 +20,14 @@ import org.apache.kafka.common.utils.Utils;
 
 import ch.ivyteam.ivy.application.IProcessModelVersion;
 import ch.ivyteam.ivy.environment.Ivy;
-import ch.ivyteam.ivy.project.IIvyProject;
+import ch.ivyteam.ivy.project.model.Project;
 import ch.ivyteam.util.threadcontext.IvyThreadContext;
 
 /**
  * Functions to support working with Apache Kafka.
  */
 public class KafkaService {
+	private static final String IJAVA_CONFIGURATION = "ch.ivyteam.ivy.java.IJavaConfiguration";
 	private static final String WORKER_POOL_SIZE = "workerPoolSize";
 	private static final String POLL_TIMEOUT_MS = "pollTimeoutMs";
 	private static final String TOPIC_CONSUMER_SUPPLIER = "topicConsumerSupplier";
@@ -213,9 +215,21 @@ public class KafkaService {
 	 * @return
 	 */
 	public <T> T executeWithProjectClassLoader(Supplier<T> supplier) {
-		return executeWithClassLoader(
-				IIvyProject.of(IProcessModelVersion.current())
-				.getProjectClassLoader(), supplier);
+		var pmv = IProcessModelVersion.current();
+		var projectClassLoader = loaderOf(pmv.project());
+		return executeWithClassLoader(projectClassLoader, supplier);
+	}
+
+	private ClassLoader loaderOf(Project project) {
+		try {
+			var javaConf = Class.forName(IJAVA_CONFIGURATION);
+			var of = MethodUtils.getMethodObject(javaConf, "of", Project.class);
+			var local = of.invoke(null, project);
+			var loader = MethodUtils.getMethodObject(javaConf, "getClassLoader");
+			return (ClassLoader) loader.invoke(local);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	/**
