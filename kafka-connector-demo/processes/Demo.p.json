@@ -1,5 +1,5 @@
 {
-  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "$schema" : "https://json-schema.axonivy.com/process/13.2.0/process.json",
   "id" : "18833AFFFC2AC1DD",
   "config" : {
     "data" : "com.axonivy.connector.kafka.demo.DemoData"
@@ -46,7 +46,7 @@
       "visual" : {
         "at" : { "x" : 96, "y" : 336 },
         "labelOffset" : { "x" : 13, "y" : 33 },
-        "icon" : "res:/webContent/icons/logo.png?small"
+        "icon" : "res:/webContent/icons/logo.png"
       },
       "connect" : [
         { "id" : "f9", "to" : "f8" }
@@ -207,7 +207,7 @@
       "visual" : {
         "at" : { "x" : 96, "y" : 416 },
         "labelOffset" : { "x" : 13, "y" : 33 },
-        "icon" : "res:/webContent/icons/logo.png?small"
+        "icon" : "res:/webContent/icons/logo.png"
       },
       "connect" : [
         { "id" : "f7", "to" : "f8" }
@@ -228,7 +228,7 @@
       "visual" : {
         "at" : { "x" : 96, "y" : 576 },
         "labelOffset" : { "x" : 13, "y" : 33 },
-        "icon" : "res:/webContent/icons/logo.png?small"
+        "icon" : "res:/webContent/icons/logo.png"
       },
       "connect" : [
         { "id" : "f14", "to" : "f13" }
@@ -249,7 +249,7 @@
       "visual" : {
         "at" : { "x" : 96, "y" : 720 },
         "labelOffset" : { "x" : 13, "y" : 33 },
-        "icon" : "res:/webContent/icons/logo.png?small"
+        "icon" : "res:/webContent/icons/logo.png"
       },
       "connect" : [
         { "id" : "f26", "to" : "f27" }

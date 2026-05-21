@@ -34,6 +34,7 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.Uuid;
 import org.apache.kafka.common.errors.ProducerFencedException;
+import org.apache.kafka.common.metrics.KafkaMetric;
 
 
 public class ProjectAwareKafkaProducer<K, V> implements Producer<K, V> {
@@ -66,13 +67,6 @@ public class ProjectAwareKafkaProducer<K, V> implements Producer<K, V> {
 	@Override
 	public void beginTransaction() throws ProducerFencedException {
 		delegate.beginTransaction();
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, String consumerGroupId)
-			throws ProducerFencedException {
-		delegate.sendOffsetsToTransaction(offsets, consumerGroupId);
 	}
 
 	@Override
@@ -129,5 +123,15 @@ public class ProjectAwareKafkaProducer<K, V> implements Producer<K, V> {
 	@Override
 	public void close(Duration timeout) {
 		delegate.close(timeout);
+	}
+
+	@Override
+	public void registerMetricForSubscription(KafkaMetric metric) {
+		delegate.registerMetricForSubscription(metric);
+	}
+
+	@Override
+	public void unregisterMetricFromSubscription(KafkaMetric metric) {
+		delegate.unregisterMetricFromSubscription(metric);
 	}
 }

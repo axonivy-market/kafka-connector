@@ -3,8 +3,6 @@
  */
 package com.axonivy.connector.kafka;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-
 import ch.ivyteam.ivy.process.eventstart.AbstractProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBeanRuntime;
@@ -28,15 +26,15 @@ public class KafkaCleanupStartEventBean extends AbstractProcessStartEventBean {
 	}
 
 	@Override
-	public synchronized void start(IProgressMonitor monitor) throws ServiceException {
-		super.start(monitor);
+	public synchronized void start() throws ServiceException {
+		super.start();
 		log().info("Started KafkaCleanupStartEventBean.");
 	}
 
 	@Override
-	public synchronized void stop(IProgressMonitor monitor) throws ServiceException {
+	public synchronized void stop() throws ServiceException {
 		KafkaService.get().closeAllProducers();
-		super.stop(monitor);
+		super.stop();
 		log().info("Stopped KafkaCleanupStartEventBean.");
 	}
 

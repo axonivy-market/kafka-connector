@@ -1,5 +1,5 @@
 {
-  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "$schema" : "https://json-schema.axonivy.com/process/13.2.0/process.json",
   "id" : "188492F5DFE91EDF",
   "kind" : "CALLABLE_SUB",
   "config" : {
@@ -49,7 +49,7 @@
           "",
           "If you want to send and receive your own classes viy a schema registry, deserializing will not work using this sub-process, because your classes will not be known to the connector. In this case either create a similiar sub-process in your own project or use the Java version of sending in a script step."
         ],
-        "icon" : "res:/webContent/icons/logo.png?small"
+        "icon" : "res:/webContent/icons/logo.png"
       },
       "connect" : [
         { "id" : "f4", "to" : "f3" }
