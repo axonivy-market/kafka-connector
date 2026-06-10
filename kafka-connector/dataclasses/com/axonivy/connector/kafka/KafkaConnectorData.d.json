@@ -1,25 +1,28 @@
 {
-  "$schema" : "https://json-schema.axonivy.com/data-class/12.0.0/data-class.json",
+  "$schema" : "https://json-schema.axonivy.com/14.0-dev/project/data-class.json",
   "simpleName" : "KafkaConnectorData",
   "namespace" : "com.axonivy.connector.kafka",
-  "isBusinessCaseData" : false,
   "fields" : [ {
     "name" : "configurationName",
-    "type" : "String"
+    "modifiers" : [ ]
   }, {
     "name" : "topic",
-    "type" : "String"
+    "modifiers" : [ ]
   }, {
     "name" : "key",
-    "type" : "Object"
+    "type" : "Object",
+    "modifiers" : [ ]
   }, {
     "name" : "value",
-    "type" : "Object"
+    "type" : "Object",
+    "modifiers" : [ ]
   }, {
     "name" : "callback",
-    "type" : "org.apache.kafka.clients.producer.Callback"
+    "type" : "org.apache.kafka.clients.producer.Callback",
+    "modifiers" : [ ]
   }, {
     "name" : "futureMetadata",
-    "type" : "java.util.concurrent.Future<org.apache.kafka.clients.producer.RecordMetadata>"
+    "type" : "java.util.concurrent.Future<org.apache.kafka.clients.producer.RecordMetadata>",
+    "modifiers" : [ ]
   } ]
 }
