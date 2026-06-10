@@ -30,6 +30,12 @@
     <dependency>
       <groupId>com.axonivy.ivy.spi</groupId>
       <artifactId>ivy-process-extension-spi</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.axonivy.ivy.api.extension</groupId>
+      <artifactId>ivy-java-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <repositories>
