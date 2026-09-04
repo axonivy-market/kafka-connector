@@ -1,0 +1,33 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/14.0-dev/project/data-class.json",
+  "simpleName" : "DemoGuiData",
+  "namespace" : "com.axonivy.connector.kafka.demo.DemoGui",
+  "fields" : [ {
+    "name" : "key",
+    "modifiers" : [ ]
+  }, {
+    "name" : "value",
+    "modifiers" : [ ]
+  }, {
+    "name" : "topic",
+    "modifiers" : [ ]
+  }, {
+    "name" : "configuration",
+    "modifiers" : [ ]
+  }, {
+    "name" : "simpleCallback",
+    "type" : "com.axonivy.connector.kafka.demo.SimpleDemoCallback",
+    "modifiers" : [ ]
+  }, {
+    "name" : "ivyCallback",
+    "type" : "com.axonivy.connector.kafka.demo.IvyDemoCallback",
+    "modifiers" : [ ]
+  }, {
+    "name" : "configurationName",
+    "modifiers" : [ ]
+  }, {
+    "name" : "person",
+    "type" : "com.axonivy.connector.kafka.demo.Person",
+    "modifiers" : [ ]
+  } ]
+}
