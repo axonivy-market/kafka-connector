@@ -17,7 +17,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.utils.Utils;
 
-import ch.ivyteam.ivy.application.IProcessModelVersion;
+import ch.ivyteam.ivy.application.project.Project;
 import ch.ivyteam.ivy.environment.Ivy;
 import ch.ivyteam.ivy.java.project.ProjectClassLoader;
 import ch.ivyteam.util.threadcontext.IvyThreadContext;
@@ -213,7 +213,7 @@ public class KafkaService {
 	 * @return
 	 */
 	public <T> T executeWithProjectClassLoader(Supplier<T> supplier) {
-		var projectClassLoader = ProjectClassLoader.of(IProcessModelVersion.current());
+		var projectClassLoader = ProjectClassLoader.of(Project.current());
 		return executeWithClassLoader(projectClassLoader, supplier);
 	}
 

@@ -22,8 +22,8 @@ import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBean;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventBeanRuntime;
 import ch.ivyteam.ivy.process.eventstart.IProcessStartEventResponse;
 import ch.ivyteam.ivy.process.extension.ProgramConfig;
-import ch.ivyteam.ivy.process.extension.ui.ExtensionUiBuilder;
-import ch.ivyteam.ivy.process.extension.ui.UiEditorExtension;
+import ch.ivyteam.ivy.process.program.ui.ProgramEditorUi;
+import ch.ivyteam.ivy.process.program.ui.ProgramUiBuilder;
 import ch.ivyteam.ivy.request.RequestException;
 import ch.ivyteam.ivy.service.ServiceException;
 import ch.ivyteam.log.Logger;
@@ -31,7 +31,7 @@ import ch.ivyteam.log.Logger;
 /**
  * {@link IProcessStartEventBean} to listen to Apache Kafka topics.
  */
-public class KafkaStartEventBean extends AbstractProcessStartEventBean {
+public class KafkaStartEventBean extends AbstractProcessStartEventBean implements ProgramEditorUi {
 	private static final String KAFKA_CONFIGURATION_NAME_FIELD = "kafkaConfigurationNameField";
 	private static final String TOPIC_PATTERN_FIELD = "topicPatternField";
 	private static final String SYNCHRONOUS_FIELD = "synchronousField";
@@ -229,47 +229,41 @@ public class KafkaStartEventBean extends AbstractProcessStartEventBean {
 		}
 	}
 
-	/**
-	 * The editor to configure a {@link KafkaStartEventBean}.
-	 */
-	public static class Editor extends UiEditorExtension {
+	@Override
+	public void editor(ProgramUiBuilder ui) {
+		ui.label("Topic Pattern:").create();
+		ui.textField(TOPIC_PATTERN_FIELD).create();
 
-		@Override
-		public void initUiFields(ExtensionUiBuilder ui) {
-			ui.label("Topic Pattern:").create();
-			ui.textField(TOPIC_PATTERN_FIELD).create();
+		ui.label("Synchronous:").create();
+		ui.textField(SYNCHRONOUS_FIELD).create();
 
-			ui.label("Synchronous:").create();
-			ui.textField(SYNCHRONOUS_FIELD).create();
+		ui.label("Configuration Base:").create();
+		ui.textField(KAFKA_CONFIGURATION_NAME_FIELD).create();
 
-			ui.label("Configuration Base:").create();
-			ui.textField(KAFKA_CONFIGURATION_NAME_FIELD).create();
+		String helpTopic = String.format("""
+				Topic pattern:
+				A java.util.regex.Pattern which will be
+				used to match topics which will be received.
+				For syntax please look into Java API documentation.
 
-			String helpTopic = String.format("""
-					Topic pattern:
-					A java.util.regex.Pattern which will be
-					used to match topics which will be received.
-					For syntax please look into Java API documentation.
+				Examples:
+				MyTopic-1
+				MyTopic-[0-9]+
+				(MyTopic|YourTopic)
 
-					Examples:
-					MyTopic-1
-					MyTopic-[0-9]+
-					(MyTopic|YourTopic)
+				Synchronous:
+				Flag which determines, if messages will be handled
+				synchronously. If true, then only a single thread
+				will be used to handle a message. This is useful,
+				if the message should not be committed automatically
+				but by the started process.
 
-					Synchronous:
-					Flag which determines, if messages will be handled
-					synchronously. If true, then only a single thread
-					will be used to handle a message. This is useful,
-					if the message should not be committed automatically
-					but by the started process.
+				Default: false
 
-					Default: false
-
-					Configuration name:
-					Name of a collection of global variables below
-					%s which defines a specific Kafka consumer configuration.
-					""", KafkaConfiguration.getKafkaGlobalVariable());
-			ui.label(helpTopic).multiline().create();
-		}
+			Configuration name:
+			Name of a collection of global variables below
+			%s which defines a specific Kafka consumer configuration.
+			""", KafkaConfiguration.getKafkaGlobalVariable());
+		ui.label(helpTopic).multiline().create();
 	}
 }
