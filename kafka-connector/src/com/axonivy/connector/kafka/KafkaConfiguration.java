@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.Producer;
 
-import ch.ivyteam.ivy.application.IApplication;
+import ch.ivyteam.ivy.application.app.Application;
 import ch.ivyteam.ivy.bpm.error.BpmError;
 import ch.ivyteam.ivy.data.cache.IDataCache;
 import ch.ivyteam.ivy.environment.Ivy;
@@ -69,7 +69,7 @@ public class KafkaConfiguration {
 	}
 
 	protected static IDataCache cache() {
-		return IDataCache.of(IApplication.current());
+		return IDataCache.of(Application.current());
 	}
 
 	public static List<String> getAllCachedConfigurations() {
