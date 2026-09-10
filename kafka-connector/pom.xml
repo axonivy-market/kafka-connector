@@ -28,14 +28,13 @@
       <artifactId>ivy-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.axonivy.ivy.spi</groupId>
-      <artifactId>ivy-process-extension-spi</artifactId>
-      <scope>provided</scope>
+      <groupId>com.axonivy.ivy.api.extension</groupId>
+      <artifactId>ivy-process-extension-api</artifactId>
+      <scope>compile</scope><!-- workaround; not on runtime classpath of dependent projects -->
     </dependency>
     <dependency>
       <groupId>com.axonivy.ivy.api.extension</groupId>
       <artifactId>ivy-java-api</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
   <repositories>
