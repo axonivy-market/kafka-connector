@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.axonivy.ivy.api</groupId>
     <artifactId>ivy-project-parent</artifactId>
-    <version>14.0.0-SNAPSHOT</version>
+    <version>14.0.0</version>
     <relativePath></relativePath>
   </parent>
   <groupId>com.axonivy.connector.kafka</groupId>
@@ -16,12 +16,12 @@
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
-      <version>8.2.1-ce</version>
+      <version>8.3.2-ce</version>
     </dependency>
     <dependency>
       <groupId>io.confluent</groupId>
       <artifactId>kafka-avro-serializer</artifactId>
-      <version>8.2.1</version>
+      <version>8.3.2</version>
     </dependency>
     <dependency>
       <groupId>com.axonivy.ivy.api</groupId>
